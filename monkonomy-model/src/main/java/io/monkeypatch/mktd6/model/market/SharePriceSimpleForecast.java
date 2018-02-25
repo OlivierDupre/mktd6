@@ -24,15 +24,15 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public class SharePriceSimpleForecast {
 
-    private final float mult;
+    private final double mult;
 
     @JsonCreator
-    public SharePriceSimpleForecast(float mult) {
+    public SharePriceSimpleForecast(double mult) {
         this.mult = mult;
     }
 
     @JsonValue
-    public float getMult() {
+    public double getMult() {
         return mult;
     }
 }

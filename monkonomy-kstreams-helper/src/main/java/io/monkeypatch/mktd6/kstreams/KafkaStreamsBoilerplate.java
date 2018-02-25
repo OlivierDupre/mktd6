@@ -4,7 +4,10 @@ import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.utils.Utils;
+import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.processor.LogAndSkipOnInvalidTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +62,7 @@ public class KafkaStreamsBoilerplate {
         return producerConfig(topic, Collections.emptyMap());
     }
 
-    protected <K, V> StreamsConfig getStreamsConfig(TopicDef<K, V> topicDef) {
-        Properties properties = new Properties();//TODO
-        return new StreamsConfig(properties);
-    }
-
-    public Properties getStreamsConfig(String bootstrapServers, String keySerdeClassName, String valueSerdeClassName, Properties additional) {
+    public Properties streamsConfigProps() {
         Properties streamsConfiguration = new Properties();
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -72,15 +70,26 @@ public class KafkaStreamsBoilerplate {
         streamsConfiguration.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
 
         streamsConfiguration.put(StreamsConfig.METADATA_MAX_AGE_CONFIG, "1000");
-        streamsConfiguration.put("default.key.serde", keySerdeClassName);
-        streamsConfiguration.put("default.value.serde", valueSerdeClassName);
         streamsConfiguration.put(StreamsConfig.STATE_DIR_CONFIG, tempDirectory().getPath());
         streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
         streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        streamsConfiguration.putAll(additional);
         return streamsConfiguration;
     }
 
+    public StreamsConfig streamsConfig() {
+        return new StreamsConfig(streamsConfigProps());
+    }
+
+
+    public <K,V> Consumed<K,V> consumed(TopicDef<K, V> topicDef) {
+        return Consumed
+            .with(topicDef.getKeySerde(), topicDef.getValueSerde())
+            .withTimestampExtractor(new LogAndSkipOnInvalidTimestamp());
+    }
+
+    public <K,V> Produced<K,V> produced(TopicDef<K, V> topicDef) {
+        return Produced.with(topicDef.getKeySerde(), topicDef.getValueSerde());
+    }
 
     public File tempDirectory() {
         String prefix = "kafka-";

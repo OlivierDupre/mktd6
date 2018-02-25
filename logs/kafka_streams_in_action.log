@@ -1,0 +1,338 @@
+2018-02-25 10:19:26 INFO  StreamsConfig:223 - StreamsConfig values: 
+	application.id = join_driver_application
+	application.server = 
+	bootstrap.servers = [localhost:9092]
+	buffered.records.per.partition = 1000
+	cache.max.bytes.buffering = 10485760
+	client.id = join_driver_client
+	commit.interval.ms = 30000
+	connections.max.idle.ms = 540000
+	default.deserialization.exception.handler = class org.apache.kafka.streams.errors.LogAndFailExceptionHandler
+	default.key.serde = class org.apache.kafka.common.serialization.Serdes$ByteArraySerde
+	default.timestamp.extractor = class bbejeck.chapter_4.timestamp_extractor.TransactionTimestampExtractor
+	default.value.serde = class org.apache.kafka.common.serialization.Serdes$ByteArraySerde
+	key.serde = null
+	metadata.max.age.ms = 10000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	num.standby.replicas = 0
+	num.stream.threads = 1
+	partition.grouper = class org.apache.kafka.streams.processor.DefaultPartitionGrouper
+	poll.ms = 100
+	processing.guarantee = at_least_once
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	replication.factor = 1
+	request.timeout.ms = 40000
+	retry.backoff.ms = 100
+	rocksdb.config.setter = null
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	state.cleanup.delay.ms = 600000
+	state.dir = /tmp/kafka-streams
+	timestamp.extractor = null
+	value.serde = null
+	windowstore.changelog.additional.retention.ms = 86400000
+	zookeeper.connect = 
+
+2018-02-25 10:19:27 INFO  ProducerConfig:223 - ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [localhost:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = null
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 3
+	retry.backoff.ms = 100
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2018-02-25 10:19:27 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Creating restore consumer client
+2018-02-25 10:19:27 INFO  ConsumerConfig:223 - ConsumerConfig values: 
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:9092]
+	check.crcs = true
+	client.id = join_driver_client-StreamThread-1-restore-consumer
+	connections.max.idle.ms = 540000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = 
+	heartbeat.interval.ms = 3000
+	interceptor.classes = null
+	internal.leave.group.on.close = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 2147483647
+	max.poll.records = 1000
+	metadata.max.age.ms = 10000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 305000
+	retry.backoff.ms = 100
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	session.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+2018-02-25 10:19:27 INFO  AppInfoParser:109 - Kafka version : 1.0.0
+2018-02-25 10:19:27 INFO  AppInfoParser:110 - Kafka commitId : aaa7af6d4a11b29d
+2018-02-25 10:19:27 INFO  AppInfoParser:109 - Kafka version : 1.0.0
+2018-02-25 10:19:27 INFO  AppInfoParser:110 - Kafka commitId : aaa7af6d4a11b29d
+2018-02-25 10:19:27 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Creating shared producer client
+2018-02-25 10:19:27 INFO  ProducerConfig:223 - ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [localhost:9092]
+	buffer.memory = 33554432
+	client.id = join_driver_client-StreamThread-1-producer
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = null
+	key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+	linger.ms = 100
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 10000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 10
+	retry.backoff.ms = 100
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+
+2018-02-25 10:19:27 INFO  AppInfoParser:109 - Kafka version : 1.0.0
+2018-02-25 10:19:27 INFO  AppInfoParser:110 - Kafka commitId : aaa7af6d4a11b29d
+2018-02-25 10:19:27 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Creating consumer client
+2018-02-25 10:19:27 INFO  ConsumerConfig:223 - ConsumerConfig values: 
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:9092]
+	check.crcs = true
+	client.id = join_driver_client-StreamThread-1-consumer
+	connections.max.idle.ms = 540000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = join_driver_application
+	heartbeat.interval.ms = 3000
+	interceptor.classes = null
+	internal.leave.group.on.close = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 2147483647
+	max.poll.records = 1000
+	metadata.max.age.ms = 10000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [org.apache.kafka.streams.processor.internals.StreamPartitionAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 305000
+	retry.backoff.ms = 100
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	session.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+2018-02-25 10:19:27 INFO  AppInfoParser:109 - Kafka version : 1.0.0
+2018-02-25 10:19:27 INFO  AppInfoParser:110 - Kafka commitId : aaa7af6d4a11b29d
+2018-02-25 10:19:27 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Starting
+2018-02-25 10:19:27 INFO  KafkaStreams:336 - stream-client [join_driver_client]Started Streams client
+2018-02-25 10:19:27 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from CREATED to RUNNING
+2018-02-25 10:19:27 INFO  AbstractCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Discovered coordinator 172.16.238.3:9092 (id: 2147482646 rack: null)
+2018-02-25 10:19:27 INFO  ConsumerCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Revoking previously assigned partitions []
+2018-02-25 10:19:27 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from RUNNING to PARTITIONS_REVOKED
+2018-02-25 10:19:27 INFO  KafkaStreams:346 - stream-client [join_driver_client]State transition from RUNNING to REBALANCING
+2018-02-25 10:19:27 INFO  StreamThread:351 - stream-thread [join_driver_client-StreamThread-1] partition revocation took 0 ms.
+	suspended active tasks: []
+	suspended standby tasks: []
+2018-02-25 10:19:27 INFO  AbstractCoordinator:336 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] (Re-)joining group
+2018-02-25 10:19:27 INFO  DefaultPartitionGrouper:85 - Skipping assigning topic transactions to tasks since its metadata is not available yet
+2018-02-25 10:19:27 INFO  DefaultPartitionGrouper:85 - Skipping assigning topic join_driver_application-KSTREAM-BRANCHCHILD-0000000005-repartition to tasks since its metadata is not available yet
+2018-02-25 10:19:27 WARN  StreamPartitionAssignor:241 - stream-thread [join_driver_client-StreamThread-1-consumer] No partitions found for topic join_driver_application-KSTREAM-BRANCHCHILD-0000000005-repartition
+2018-02-25 10:19:27 WARN  StreamPartitionAssignor:241 - stream-thread [join_driver_client-StreamThread-1-consumer] No partitions found for topic transactions
+2018-02-25 10:19:27 WARN  StreamPartitionAssignor:241 - stream-thread [join_driver_client-StreamThread-1-consumer] No partitions found for topic join_driver_application-KSTREAM-BRANCHCHILD-0000000004-repartition
+2018-02-25 10:19:27 INFO  StreamPartitionAssignor:341 - stream-thread [join_driver_client-StreamThread-1-consumer] Assigned tasks to clients as {2da2ebea-aff1-4443-b15f-affa35e6d034=[activeTasks: ([]) standbyTasks: ([]) assignedTasks: ([]) prevActiveTasks: ([]) prevAssignedTasks: ([]) capacity: 1]}.
+2018-02-25 10:19:28 INFO  AbstractCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Successfully joined group with generation 1
+2018-02-25 10:19:28 INFO  ConsumerCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Setting newly assigned partitions []
+2018-02-25 10:19:28 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from PARTITIONS_REVOKED to PARTITIONS_ASSIGNED
+2018-02-25 10:19:28 INFO  StreamThread:351 - stream-thread [join_driver_client-StreamThread-1] partition assignment took 0 ms.
+	current active tasks: []
+	current standby tasks: []
+	previous active tasks: []
+
+2018-02-25 10:19:28 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from PARTITIONS_ASSIGNED to RUNNING
+2018-02-25 10:19:28 INFO  KafkaStreams:346 - stream-client [join_driver_client]State transition from REBALANCING to RUNNING
+2018-02-25 10:19:28 WARN  NetworkClient:246 - [Producer clientId=producer-1] Error while fetching metadata with correlation id 1 : {transactions=LEADER_NOT_AVAILABLE}
+2018-02-25 10:19:28 WARN  NetworkClient:246 - [Producer clientId=producer-1] Error while fetching metadata with correlation id 3 : {transactions=LEADER_NOT_AVAILABLE}
+2018-02-25 10:19:29 WARN  NetworkClient:246 - [Producer clientId=producer-1] Error while fetching metadata with correlation id 4 : {transactions=LEADER_NOT_AVAILABLE}
+2018-02-25 10:19:37 INFO  ConsumerCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Revoking previously assigned partitions []
+2018-02-25 10:19:37 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from RUNNING to PARTITIONS_REVOKED
+2018-02-25 10:19:37 INFO  KafkaStreams:346 - stream-client [join_driver_client]State transition from RUNNING to REBALANCING
+2018-02-25 10:19:37 INFO  StreamThread:351 - stream-thread [join_driver_client-StreamThread-1] partition revocation took 0 ms.
+	suspended active tasks: []
+	suspended standby tasks: []
+2018-02-25 10:19:37 INFO  AbstractCoordinator:336 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] (Re-)joining group
+2018-02-25 10:19:39 INFO  StreamPartitionAssignor:341 - stream-thread [join_driver_client-StreamThread-1-consumer] Assigned tasks to clients as {2da2ebea-aff1-4443-b15f-affa35e6d034=[activeTasks: ([0_0, 1_0]) standbyTasks: ([]) assignedTasks: ([0_0, 1_0]) prevActiveTasks: ([]) prevAssignedTasks: ([]) capacity: 1]}.
+2018-02-25 10:19:39 INFO  ConsumerCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] The following not-subscribed topics are assigned, and their metadata will be fetched from the brokers: [join_driver_application-KSTREAM-BRANCHCHILD-0000000005-repartition, join_driver_application-KSTREAM-BRANCHCHILD-0000000004-repartition]
+2018-02-25 10:19:39 INFO  AbstractCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Successfully joined group with generation 2
+2018-02-25 10:19:39 INFO  ConsumerCoordinator:341 - [Consumer clientId=join_driver_client-StreamThread-1-consumer, groupId=join_driver_application] Setting newly assigned partitions [join_driver_application-KSTREAM-BRANCHCHILD-0000000005-repartition-0, join_driver_application-KSTREAM-BRANCHCHILD-0000000004-repartition-0, transactions-0]
+2018-02-25 10:19:39 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from PARTITIONS_REVOKED to PARTITIONS_ASSIGNED
+2018-02-25 10:19:39 INFO  StreamThread:351 - stream-thread [join_driver_client-StreamThread-1] partition assignment took 25 ms.
+	current active tasks: [0_0, 1_0]
+	current standby tasks: []
+	previous active tasks: []
+
+2018-02-25 10:19:39 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from PARTITIONS_ASSIGNED to RUNNING
+2018-02-25 10:19:39 INFO  KafkaStreams:346 - stream-client [join_driver_client]State transition from REBALANCING to RUNNING
+2018-02-25 10:20:32 INFO  KafkaStreams:346 - stream-client [join_driver_client]State transition from RUNNING to PENDING_SHUTDOWN
+2018-02-25 10:20:32 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Informed to shut down
+2018-02-25 10:20:32 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from RUNNING to PENDING_SHUTDOWN
+2018-02-25 10:20:32 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Shutting down
+2018-02-25 10:20:33 INFO  KafkaProducer:341 - [Producer clientId=join_driver_client-StreamThread-1-producer] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.
+2018-02-25 10:20:33 INFO  StreamThread:346 - stream-thread [join_driver_client-StreamThread-1] State transition from PENDING_SHUTDOWN to DEAD
+2018-02-25 10:20:33 INFO  StreamThread:336 - stream-thread [join_driver_client-StreamThread-1] Shutdown complete
+2018-02-25 10:20:33 INFO  KafkaStreams:346 - stream-client [join_driver_client]State transition from PENDING_SHUTDOWN to NOT_RUNNING
+2018-02-25 10:20:33 INFO  KafkaStreams:336 - stream-client [join_driver_client]Streams client stopped completely
+2018-02-25 10:20:33 INFO  KafkaProducer:341 - [Producer clientId=producer-1] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.

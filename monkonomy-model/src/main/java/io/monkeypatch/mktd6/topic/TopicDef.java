@@ -1,6 +1,8 @@
 package io.monkeypatch.mktd6.topic;
 
+import io.monkeypatch.mktd6.model.gibber.Gibb;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
+import io.monkeypatch.mktd6.model.market.SharePriceMult;
 import io.monkeypatch.mktd6.model.market.ops.TxnResult;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.model.trader.ops.FeedMonkeys;
@@ -38,12 +40,21 @@ public class TopicDef<K, V> {
             new JsonSerde.TraderSerde(),
             new JsonSerde.TxnResultSerde());
 
-    public static final TopicDef<Void, SharePriceInfo> SHARE_PRICE = new TopicDef<>(
+    public static final TopicDef<String, SharePriceMult> SHARE_PRICE_OUTSIDE_EVOLUTION_METER = new TopicDef<>(
+            "share-price-outside-evolution-meter",
+            new JsonSerde.StringSerde(),
+            new JsonSerde.SharePriceMultSerde());
+
+    public static final TopicDef<String, SharePriceInfo> SHARE_PRICE = new TopicDef<>(
             "share-price",
-            new JsonSerde.VoidSerde(),
+            new JsonSerde.StringSerde(),
             new JsonSerde.SharePriceInfoSerde());
 
-
+    public static final TopicDef<String, Gibb> GIBBS = new TopicDef<>(
+            "gibber-gibbs",
+            new JsonSerde.StringSerde(),
+            new JsonSerde.GibbSerde()
+    );
 
     private final String topicName;
     private final BaseJsonSerde<K> keySerde;

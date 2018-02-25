@@ -10,24 +10,30 @@ public class SharePriceInfo {
     @JsonProperty
     private final DateTime time;
     @JsonProperty
-    private final float coins;
+    private final double coins;
     @JsonProperty
     private final SharePriceSimpleForecast forecast;
 
     @JsonCreator
-    public SharePriceInfo(@JsonProperty("time") DateTime time,
-                          @JsonProperty("coins") float coins,
-                          @JsonProperty("forecast") SharePriceSimpleForecast forecast) {
+    public SharePriceInfo(
+            @JsonProperty("time") DateTime time,
+            @JsonProperty("coins") double coins,
+            @JsonProperty("forecast") SharePriceSimpleForecast forecast
+    ) {
         this.time = time;
         this.coins = coins;
         this.forecast = forecast;
     }
 
-    public static SharePriceInfo make(float coins, float mult) {
-        return new SharePriceInfo(DateTime.now(DateTimeZone.UTC), coins, new SharePriceSimpleForecast(mult));
+    public static SharePriceInfo make(double coins, double mult) {
+        return new SharePriceInfo(
+            DateTime.now(DateTimeZone.UTC),
+            coins,
+            new SharePriceSimpleForecast(mult)
+        );
     }
 
-    public float getCoins() {
+    public double getCoins() {
         return coins;
     }
 

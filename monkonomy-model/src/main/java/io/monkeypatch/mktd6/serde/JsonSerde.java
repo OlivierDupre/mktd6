@@ -2,6 +2,7 @@ package io.monkeypatch.mktd6.serde;
 
 import io.monkeypatch.mktd6.model.gibber.Gibb;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
+import io.monkeypatch.mktd6.model.market.SharePriceMult;
 import io.monkeypatch.mktd6.model.market.ops.TxnResult;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.model.trader.ops.FeedMonkeys;
@@ -34,6 +35,9 @@ public class JsonSerde {
     }
     public static class SharePriceInfoSerde extends BaseJsonSerde<SharePriceInfo> {
         public SharePriceInfoSerde() { super(SharePriceInfo.class); }
+    }
+    public static class SharePriceMultSerde extends BaseJsonSerde<SharePriceMult> {
+        public SharePriceMultSerde() { super(SharePriceMult.class); }
     }
     public static class GibbSerde extends BaseJsonSerde<Gibb> {
         public GibbSerde() { super(Gibb.class); }
