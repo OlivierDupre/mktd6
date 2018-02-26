@@ -39,7 +39,7 @@ public class SharePriceBandTransformer implements ValueTransformer<Double, Share
 
     @Override
     public SharePriceInfo transform(Double value) {
-        double hypeComponent = Optional.ofNullable(stateStore.get(StateKeys.PRICE_HYPE_COMPONENT)).orElse(0d);
+        double hypeComponent = Optional.ofNullable(stateStore.get(StateConstants.PRICE_HYPE_COMPONENT_KEY)).orElse(0d);
         double newValue = value + hypeComponent;
 
         double previousValue = Optional.ofNullable(stateStore.get(EMA)).orElse(newValue);

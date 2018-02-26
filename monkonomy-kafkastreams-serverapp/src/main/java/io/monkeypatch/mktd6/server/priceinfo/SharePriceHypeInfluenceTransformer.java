@@ -32,20 +32,20 @@ public class SharePriceHypeInfluenceTransformer implements ValueTransformer<Doub
 
     @Override
     public Double transform(Double value) {
-        stateStore.putIfAbsent(StateKeys.BURSTS, 0d);
+        stateStore.putIfAbsent(StateConstants.BURSTS_KEY, 0d);
 
-        double bursts = stateStore.get(StateKeys.BURSTS);
+        double bursts = stateStore.get(StateConstants.BURSTS_KEY);
         double diff = value - bursts;
 
         // The more hype, the more risk of the burst of a hype bubble...
         if (random.nextDouble() < diff * 0.01) {
             diff = diff / 2;
             bursts = bursts + diff;
-            stateStore.put(StateKeys.BURSTS, bursts);
+            stateStore.put(StateConstants.BURSTS_KEY, bursts);
             LOG.info("BubbleBurst!!!: -{}", diff);
         }
 
-        stateStore.put(StateKeys.PRICE_HYPE_COMPONENT, diff);
+        stateStore.put(StateConstants.PRICE_HYPE_COMPONENT_KEY, diff);
         LOG.info(String.format("Influence: %.5f - %.5f = %.5f", value, bursts, diff));
         return diff;
     }

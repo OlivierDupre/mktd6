@@ -19,6 +19,8 @@ import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.monkeypatch.mktd6.server.priceinfo.StateConstants.PRICE_STATE_STORE;
+
 /**
  * This class generates the data in the share price topic.
  *
@@ -38,7 +40,6 @@ import org.slf4j.LoggerFactory;
 public class SharePriceServer implements TopologySupplier {
 
     private static final Logger LOG = LoggerFactory.getLogger(SharePriceServer.class);
-    public static final String PRICE_STATE_STORE = "price-state-store";
 
     @Override
     public StreamsBuilder apply(
