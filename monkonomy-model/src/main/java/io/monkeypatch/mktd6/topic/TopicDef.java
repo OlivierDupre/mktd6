@@ -57,10 +57,10 @@ public class TopicDef<K, V> {
     );
 
     private final String topicName;
-    private final BaseJsonSerde<K> keySerde;
-    private final BaseJsonSerde<V> valueSerde;
+    private final Serde<K> keySerde;
+    private final Serde<V> valueSerde;
 
-    public TopicDef(String topicName, BaseJsonSerde<K> keySerde, BaseJsonSerde<V> valueSerde) {
+    public TopicDef(String topicName, Serde<K> keySerde, Serde<V> valueSerde) {
         this.topicName = topicName;
         this.keySerde = keySerde;
         this.valueSerde = valueSerde;
@@ -70,11 +70,8 @@ public class TopicDef<K, V> {
         return topicName;
     }
 
-    public BaseJsonSerde<K> getKeySerde() { return keySerde; }
-    public BaseJsonSerde<V> getValueSerde() { return valueSerde; }
-
-    public Class<K> getKeyType() { return keySerde.getType(); }
-    public Class<V> getValueType() { return valueSerde.getType(); }
+    public Serde<K> getKeySerde() { return keySerde; }
+    public Serde<V> getValueSerde() { return valueSerde; }
 
     public Class<? extends Serializer<K>> getKeySerializerClass() {
         return (Class<? extends Serializer<K>>)((Serializer<K>)getKeySerde()).getClass();

@@ -2,11 +2,17 @@ package io.monkeypatch.mktd6.server;
 
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
+import io.monkeypatch.mktd6.server.model.StateStores;
 import io.monkeypatch.mktd6.server.priceinfo.SharePriceMultMeter;
 import io.monkeypatch.mktd6.server.priceinfo.SharePriceServer;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,17 +60,19 @@ public class MonkonomyServer {
     }
 
     private Topology buildTopology() {
-        StreamsBuilder streamsBuilder = new StreamsBuilder();
+        StreamsBuilder builder = new StreamsBuilder();
+
         return getTopologyBuilders()
             .reduce(
-                streamsBuilder,
-                (builder, supplier) -> supplier.apply(boilerplate, builder),
+                builder,
+                (b, supplier) -> supplier.apply(boilerplate, b),
                 (l, r) -> l)
             .build();
     }
 
     private Stream<TopologySupplier> getTopologyBuilders() {
         return Stream.of(
+            (helper, builder) -> StateStores.PRICE_VALUE_STORE.addTo(builder),
             new SharePriceServer()
         );
     }
@@ -75,6 +83,5 @@ public class MonkonomyServer {
                 "monkonomy-server");
         new MonkonomyServer(helper).run();
     }
-
 
 }

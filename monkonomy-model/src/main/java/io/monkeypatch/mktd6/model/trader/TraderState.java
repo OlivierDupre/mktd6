@@ -9,13 +9,13 @@ public class TraderState {
 
     private final DateTime time;
 
-    private final float coins;
+    private final double coins;
     private final int shares;
     private final int bailouts;
     private final int fedMonkeys;
 
     @JsonCreator
-    public TraderState(float coins, int shares, int bailouts, int fedMonkeys) {
+    public TraderState(double coins, int shares, int bailouts, int fedMonkeys) {
         this.time = now();
         this.coins = coins;
         this.shares = shares;
@@ -27,7 +27,7 @@ public class TraderState {
         return time;
     }
 
-    public float getCoins() {
+    public double getCoins() {
         return coins;
     }
 

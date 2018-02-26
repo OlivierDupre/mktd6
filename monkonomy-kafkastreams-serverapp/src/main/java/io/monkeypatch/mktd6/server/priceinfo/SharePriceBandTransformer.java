@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.monkeypatch.mktd6.server.model.StateConstants.*;
+
 public class SharePriceBandTransformer implements ValueTransformer<Double, SharePriceInfo> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SharePriceBandTransformer.class);
-
-    private static final String EMA = "EMA";
 
     private KeyValueStore<String, Double> stateStore;
     private final String storeName;
@@ -39,7 +39,7 @@ public class SharePriceBandTransformer implements ValueTransformer<Double, Share
 
     @Override
     public SharePriceInfo transform(Double value) {
-        double hypeComponent = Optional.ofNullable(stateStore.get(StateConstants.PRICE_HYPE_COMPONENT_KEY)).orElse(0d);
+        double hypeComponent = Optional.ofNullable(stateStore.get(PRICE_HYPE_COMPONENT_KEY)).orElse(0d);
         double newValue = value + hypeComponent;
 
         double previousValue = Optional.ofNullable(stateStore.get(EMA)).orElse(newValue);
@@ -47,6 +47,7 @@ public class SharePriceBandTransformer implements ValueTransformer<Double, Share
         stateStore.put(EMA, movingAverage);
         double forecastMult = movingAverage / newValue;
         SharePriceInfo result = SharePriceInfo.make(newValue, forecastMult);
+        stateStore.put(CURRENT_SHARE_PRICE_KEY, newValue);
         LOG.info("PriceInfo: {}", newValue);
         return result;
     }

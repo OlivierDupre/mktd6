@@ -5,21 +5,18 @@ import io.monkeypatch.mktd6.kstreams.TopologySupplier;
 import io.monkeypatch.mktd6.model.gibber.Gibb;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
 import io.monkeypatch.mktd6.model.market.SharePriceMult;
-import io.monkeypatch.mktd6.serde.JsonSerde;
 import io.monkeypatch.mktd6.server.model.ShareHypePiece;
+import io.monkeypatch.mktd6.server.model.StateStores;
 import io.monkeypatch.mktd6.server.model.Topics;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
-import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.StoreBuilder;
-import org.apache.kafka.streams.state.Stores;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Serialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static io.monkeypatch.mktd6.server.priceinfo.StateConstants.PRICE_STATE_STORE;
 
 /**
  * This class generates the data in the share price topic.
@@ -49,8 +46,7 @@ public class SharePriceServer implements TopologySupplier {
         TopicDef<String, Gibb> gibbs = TopicDef.GIBBS;
         TopicDef<String, SharePriceMult> priceMults = TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
         TopicDef<String, ShareHypePiece> shareHypeTopic = Topics.SHARE_HYPE;
-
-        addPriceState(builder);
+        String priceStoreName = StateStores.PRICE_VALUE_STORE.getStoreName();
 
         // Fetch the stream of (random) multipliers
         KStream<String, Double> sharePriceBase = builder
@@ -87,27 +83,21 @@ public class SharePriceServer implements TopologySupplier {
         hypePriceInfluence
             .toStream()
             .transformValues(
-                () -> new SharePriceHypeInfluenceTransformer(PRICE_STATE_STORE),
-                PRICE_STATE_STORE)
+                () -> new SharePriceHypeInfluenceTransformer(priceStoreName),
+                priceStoreName)
             .peek((k,v) -> LOG.info("HypePriceAdder: {}", v))
         ;
 
         // Compute the prices and output them to the dedicated topic
         KStream<String, SharePriceInfo> sharePrices = sharePriceBase
             .transformValues(
-                () -> new SharePriceBandTransformer(PRICE_STATE_STORE, 0.1d),
-                PRICE_STATE_STORE)
+                () -> new SharePriceBandTransformer(priceStoreName, 0.1d),
+                priceStoreName)
         ;
         sharePrices
             .to(TopicDef.SHARE_PRICE.getTopicName(), helper.produced(TopicDef.SHARE_PRICE));
 
         return builder;
-    }
-
-    private void addPriceState(StreamsBuilder builder) {
-        KeyValueBytesStoreSupplier storeSupplier = Stores.inMemoryKeyValueStore(PRICE_STATE_STORE);
-        StoreBuilder<KeyValueStore<String, Double>> storeBuilder = Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), Serdes.Double());
-        builder.addStateStore(storeBuilder);
     }
 
     private boolean selectGibb(Gibb v) {

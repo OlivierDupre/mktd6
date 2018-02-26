@@ -1,5 +1,6 @@
 package io.monkeypatch.mktd6.server.priceinfo;
 
+import io.monkeypatch.mktd6.server.model.StateConstants;
 import org.apache.kafka.streams.kstream.ValueTransformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;

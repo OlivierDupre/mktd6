@@ -17,5 +17,4 @@ public class Topics {
             "trader-state-updates",
             new JsonSerde.TraderSerde(),
             new TraderStateUpdater.Serde());
-
 }

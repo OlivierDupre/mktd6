@@ -15,7 +15,7 @@ public final class TraderStateUpdater {
 
     private final String txnId;
 
-    private final float coinsDiff;
+    private final double coinsDiff;
     private final int sharesDiff;
     private final boolean addBailout;
     private final int fedMonkeys;
@@ -23,7 +23,7 @@ public final class TraderStateUpdater {
     @JsonCreator
     private TraderStateUpdater(
             @JsonProperty("txnId") String txnId,
-            @JsonProperty("coinsDiff") float coinsDiff,
+            @JsonProperty("coinsDiff") double coinsDiff,
             @JsonProperty("sharesDiff") int sharesDiff,
             @JsonProperty("addBailout") boolean addBailout,
             @JsonProperty("fedMonkeys") int fedMonkeys
@@ -35,7 +35,7 @@ public final class TraderStateUpdater {
         this.fedMonkeys = fedMonkeys;
     }
 
-    public float getCoinsDiff() {
+    public double getCoinsDiff() {
         return coinsDiff;
     }
 
@@ -73,7 +73,7 @@ public final class TraderStateUpdater {
         return new TxnResult(trader, txnId, keptState, status);
     }
 
-    public static TraderStateUpdater from(MarketOrder order, float sharePrice) {
+    public static TraderStateUpdater from(MarketOrder order, double sharePrice) {
         return new TraderStateUpdater(
             order.getTxnId(),
             order.getType().getCoinSign() * order.getShares() * sharePrice,
