@@ -10,8 +10,6 @@ import io.monkeypatch.mktd6.server.model.ShareHypePiece;
 import io.monkeypatch.mktd6.server.model.Topics;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
@@ -85,7 +83,7 @@ public class SharePriceServer implements TopologySupplier {
                 Materialized.with(Serdes.String(), Serdes.Double()));
 
         // Compute the hype taking bubble bursts into account, using state
-        KStream<String, Double> hypePriceAdder = hypePriceInfluence
+        hypePriceInfluence
             .toStream()
             .transformValues(
                 () -> new SharePriceHypeInfluenceTransformer(PRICE_STATE_STORE),
@@ -95,11 +93,6 @@ public class SharePriceServer implements TopologySupplier {
 
         // Compute the prices and output them to the dedicated topic
         KStream<String, SharePriceInfo> sharePrices = sharePriceBase
-            .leftJoin(
-                hypePriceAdder,
-                (base, add) -> add == null ? base : base + add,
-                JoinWindows.of(1000),
-                Joined.with(new JsonSerde.StringSerde(), Serdes.Double(), Serdes.Double()))
             .transformValues(
                 () -> new SharePriceBandTransformer(PRICE_STATE_STORE, 0.1d),
                 PRICE_STATE_STORE)

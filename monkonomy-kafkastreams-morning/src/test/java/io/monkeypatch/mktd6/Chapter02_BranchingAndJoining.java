@@ -125,19 +125,7 @@ public class Chapter02_BranchingAndJoining extends EmbeddedClusterBoilerplate {
 
     @Test
     public void testUpOrDown() throws Exception {
-        sendValues(GIBB_TOPIC, Arrays.asList(
-            new Gibb(id, time, "#mktd6 this is ignored"),
-            new Gibb(id, time, "#mktd6 #bananacoins are good!!!"),
-            new Gibb(id, time, "#mktd6 #bananacoins make me sad!!"),
-            new Gibb(id, time, "smile happy good !!! (ignored)"),
-            new Gibb(id, time, "#mktd6 smile! #bananacoins")
-        ));
 
-        assertValuesReceivedOnTopic(PRICE_INFLUENCE_TOPIC, Arrays.asList(
-            "UP", "UP", "UP",
-            "DOWN", "DOWN",
-            "UP"
-        ));
     }
 
 }

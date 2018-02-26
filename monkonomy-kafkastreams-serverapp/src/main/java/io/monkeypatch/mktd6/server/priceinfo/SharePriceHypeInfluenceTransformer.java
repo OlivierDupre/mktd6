@@ -13,8 +13,6 @@ public class SharePriceHypeInfluenceTransformer implements ValueTransformer<Doub
 
     private static final Logger LOG = LoggerFactory.getLogger(SharePriceHypeInfluenceTransformer.class);
 
-    private static final String BURSTS = "BURSTS";
-
     private KeyValueStore<String, Double> stateStore;
     private final String storeName;
     private ProcessorContext context;
@@ -34,31 +32,28 @@ public class SharePriceHypeInfluenceTransformer implements ValueTransformer<Doub
 
     @Override
     public Double transform(Double value) {
-        stateStore.putIfAbsent(BURSTS, 0d);
+        stateStore.putIfAbsent(StateKeys.BURSTS, 0d);
 
-        double bursts = stateStore.get(BURSTS);
+        double bursts = stateStore.get(StateKeys.BURSTS);
         double diff = value - bursts;
 
         // The more hype, the more risk of the burst of a hype bubble...
         if (random.nextDouble() < diff * 0.01) {
             diff = diff / 2;
             bursts = bursts + diff;
-            stateStore.put(BURSTS, bursts);
+            stateStore.put(StateKeys.BURSTS, bursts);
             LOG.info("BubbleBurst!!!: -{}", diff);
         }
 
+        stateStore.put(StateKeys.PRICE_HYPE_COMPONENT, diff);
         LOG.info(String.format("Influence: %.5f - %.5f = %.5f", value, bursts, diff));
         return diff;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public Double punctuate(long timestamp) {
-        return null;  //no-op null values not forwarded.
-    }
+    public Double punctuate(long timestamp) { return null; }
 
     @Override
-    public void close() {
-        //no-op
-    }
+    public void close() {}
 }

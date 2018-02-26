@@ -34,7 +34,7 @@ public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerpl
 
     // We will be reading from this topic.
     // (TopicDef is a helper class that is not part of Kafka.)
-    public static final TopicDef<Void, SharePriceInfo> SHARE_PRICE_TOPIC = TopicDef.SHARE_PRICE;
+    public static final TopicDef<String, SharePriceInfo> SHARE_PRICE_TOPIC = TopicDef.SHARE_PRICE;
     public static final String SHARE_PRICE_TOPIC_NAME = SHARE_PRICE_TOPIC .getTopicName();
 
     // And we will be writing to this topic:
@@ -71,7 +71,7 @@ public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerpl
      */
     protected void buildStreamTopology(StreamsBuilder streamsBuilder) {
         // We read from the share price topic
-        streamsBuilder.<Void, SharePriceInfo>stream(SHARE_PRICE_TOPIC_NAME)
+        streamsBuilder.<String, SharePriceInfo>stream(SHARE_PRICE_TOPIC_NAME)
 
             // .peek allows to add dirty IO for stream events
             .peek((k, v) -> System.out.println(k + " = " + v))

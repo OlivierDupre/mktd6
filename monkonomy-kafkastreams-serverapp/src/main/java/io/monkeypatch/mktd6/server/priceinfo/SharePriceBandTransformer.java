@@ -39,23 +39,22 @@ public class SharePriceBandTransformer implements ValueTransformer<Double, Share
 
     @Override
     public SharePriceInfo transform(Double value) {
-        double previousValue = Optional.ofNullable(stateStore.get(EMA)).orElse(value);
-        double movingAverage = previousValue * (1d - factor) + value * factor;
+        double hypeComponent = Optional.ofNullable(stateStore.get(StateKeys.PRICE_HYPE_COMPONENT)).orElse(0d);
+        double newValue = value + hypeComponent;
+
+        double previousValue = Optional.ofNullable(stateStore.get(EMA)).orElse(newValue);
+        double movingAverage = previousValue * (1d - factor) + newValue * factor;
         stateStore.put(EMA, movingAverage);
-        double forecastMult = movingAverage / value;
-        SharePriceInfo result = SharePriceInfo.make(value, forecastMult);
-        LOG.info("PriceInfo: {}", value);
+        double forecastMult = movingAverage / newValue;
+        SharePriceInfo result = SharePriceInfo.make(newValue, forecastMult);
+        LOG.info("PriceInfo: {}", newValue);
         return result;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public SharePriceInfo punctuate(long timestamp) {
-        return null;  //no-op null values not forwarded.
-    }
+    public SharePriceInfo punctuate(long timestamp) { return null; }
 
     @Override
-    public void close() {
-        //no-op
-    }
+    public void close() {}
 }

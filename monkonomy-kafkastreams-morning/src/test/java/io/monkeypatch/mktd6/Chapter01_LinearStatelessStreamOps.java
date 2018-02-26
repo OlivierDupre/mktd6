@@ -9,6 +9,8 @@ import io.vavr.Tuple2;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Printed;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,11 +44,11 @@ public class Chapter01_LinearStatelessStreamOps extends EmbeddedClusterBoilerpla
 
     enum PriceInfluence { UP, DOWN }
 
-    public static final TopicDef<Void, Gibb> GIBB_TOPIC =
-            new TopicDef<>("gibb-topic", new JsonSerde.VoidSerde(), new JsonSerde.GibbSerde());
+    public static final TopicDef<String, Gibb> GIBB_TOPIC =
+            new TopicDef<>("gibb-topic", new JsonSerde.StringSerde(), new JsonSerde.GibbSerde());
 
-    public static final TopicDef<Void, String> PRICE_INFLUENCE_TOPIC =
-            new TopicDef<>("price-influence-topic", new JsonSerde.VoidSerde(), new JsonSerde.StringSerde());
+    public static final TopicDef<String, String> PRICE_INFLUENCE_TOPIC =
+            new TopicDef<>("price-influence-topic", new JsonSerde.StringSerde(), new JsonSerde.StringSerde());
 
     @Before
     public void setUp() throws Exception {
@@ -86,14 +88,14 @@ public class Chapter01_LinearStatelessStreamOps extends EmbeddedClusterBoilerpla
      *     (using KStream#to)
      */
     protected void buildStreamTopology(StreamsBuilder streamsBuilder) {
-        KStream<Void, String> upOrDown = streamsBuilder.<Void, Gibb>stream(GIBB_TOPIC.getTopicName())
+        KStream<String, String> upOrDown = streamsBuilder.<String, Gibb>stream(GIBB_TOPIC.getTopicName())
             .filter((k, v) -> v.getText().contains("#mktd6") && v.getText().contains("#bananacoins"))
             .mapValues(this::gibbAnalysis)
             .filterNot((k, t) -> t._1 == Sentiment.NEUTRAL)
             .flatMapValues(t -> influencingChars(t._1, t._2).map(Enum::name).collect(Collectors.toList()));
 
         // As an alternative to #peek, use #print() to display the key/value pairs passing through the stream
-        upOrDown.print(Printed.<Void, String>toSysOut().withLabel("upOrDown"));
+        upOrDown.print(Printed.<String, String>toSysOut().withLabel("upOrDown"));
 
         upOrDown
             .to(PRICE_INFLUENCE_TOPIC.getTopicName());
@@ -129,11 +131,11 @@ public class Chapter01_LinearStatelessStreamOps extends EmbeddedClusterBoilerpla
     @Test
     public void testUpOrDown() throws Exception {
         sendValues(GIBB_TOPIC, Arrays.asList(
-            new Gibb(id, time, "#mktd6 this is ignored"),
-            new Gibb(id, time, "#mktd6 #bananacoins are good!!!"),
-            new Gibb(id, time, "#mktd6 #bananacoins make me sad!!"),
-            new Gibb(id, time, "smile happy good !!! (ignored)"),
-            new Gibb(id, time, "#mktd6 smile! #bananacoins")
+            new Gibb("001", DateTime.now(DateTimeZone.UTC), "#mktd6 this is ignored"),
+            new Gibb("002", DateTime.now(DateTimeZone.UTC), "#mktd6 #bananacoins are good!!!"),
+            new Gibb("003", DateTime.now(DateTimeZone.UTC), "#mktd6 #bananacoins make me sad!!"),
+            new Gibb("004", DateTime.now(DateTimeZone.UTC), "smile happy good !!! (ignored)"),
+            new Gibb("005", DateTime.now(DateTimeZone.UTC), "#mktd6 smile! #bananacoins")
         ));
 
         assertValuesReceivedOnTopic(PRICE_INFLUENCE_TOPIC, Arrays.asList(
