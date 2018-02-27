@@ -1,6 +1,7 @@
 package io.monkeypatch.mktd6.model.trader.ops;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public class MarketOrder extends TraderOp {
 
@@ -14,6 +15,10 @@ public class MarketOrder extends TraderOp {
         }
         this.type = type;
         this.shares = shares;
+    }
+
+    public static MarketOrder make(String txnId, MarketOrderType type, int shares) {
+        return new MarketOrder(DateTime.now(DateTimeZone.UTC), txnId, type, shares);
     }
 
     public MarketOrderType getType() {

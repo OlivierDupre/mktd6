@@ -54,6 +54,7 @@ public class KafkaStreamsBoilerplate {
         properties.put(ProducerConfig.RETRIES_CONFIG, 0);
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, topic.getKeySerializerClass().getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, topic.getValueSerializerClass().getName());
+        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
         properties.putAll(additional);
         return properties;
     }

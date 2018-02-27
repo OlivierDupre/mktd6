@@ -7,6 +7,7 @@ import io.monkeypatch.mktd6.model.trader.ops.FeedMonkeys;
 import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 import io.monkeypatch.mktd6.server.model.StateStores;
+import io.monkeypatch.mktd6.server.model.Topics;
 import io.monkeypatch.mktd6.server.model.TraderStateUpdater;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -31,6 +32,7 @@ public class MarketServer  implements TopologySupplier {
         TopicDef<Trader, MarketOrder> marketOrders = TopicDef.MARKET_ORDERS;
         TopicDef<Trader, FeedMonkeys> feedMonkeys = TopicDef.FEED_MONKEYS;
         TopicDef<Trader, Investment> investments = TopicDef.INVESTMENT_ORDERS;
+        TopicDef<Trader, TraderStateUpdater> traderUpdates = Topics.TRADER_UPDATES;
 
         KStream<Trader, TraderStateUpdater> orderStateUpdaters = builder
                 .stream(marketOrders.getTopicName(), helper.consumed(marketOrders))
@@ -49,6 +51,7 @@ public class MarketServer  implements TopologySupplier {
                 .merge(feedMonkeysStateUpdaters)
                 .merge(investmentsStateUpdaters);
 
+        updates.to(traderUpdates.getTopicName(), helper.produced(traderUpdates));
         
         return builder;
     }
