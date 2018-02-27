@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: wurstmeister/zookeeper
+    image: wurstmeister/zookeeper@sha256:2d71f9e0cb3440d552ee31769a00eb813be87397bf535995aca0bd4eadc151fc
     ports:
       - 2181:2181
     networks:
@@ -10,7 +10,7 @@ services:
         ipv4_address: 172.16.238.2
 
   kafka:
-    image: wurstmeister/kafka
+    image: wurstmeister/kafka@sha256:01b42b29f3ab3f5c08734e1c9e78989812d1d15d6a170de0ccd3796b0a1ca6fd
     ports:
       - 9092:9092
     environment:
@@ -26,7 +26,7 @@ services:
         ipv4_address: 172.16.238.3
 
   kafka-rest:
-    image: confluentinc/cp-kafka-rest
+    image: confluentinc/cp-kafka-rest@sha256:609811e23456f5eaff49cbcea3e744a02f91d9db1407f3a52b79ec890615f61b
     environment:
       KAFKA_REST_BOOTSTRAP_SERVERS: 172.16.238.3:9092
       KAFKA_REST_ZOOKEEPER_CONNECT: 172.16.238.2:2181
@@ -41,8 +41,8 @@ services:
       kpn:
         ipv4_address: 172.16.238.4
 
-  topics-ui: # TODO: topics-ui does not work, don't know why
-    image: landoop/kafka-topics-ui
+  topics-ui:
+    image: landoop/kafka-topics-ui@sha256:706499fc37c67b4d3edce7a04579b8e0c420fec0aea30d893888b22d20bc99a8
     ports:
       - 8000:8000
     environment:
