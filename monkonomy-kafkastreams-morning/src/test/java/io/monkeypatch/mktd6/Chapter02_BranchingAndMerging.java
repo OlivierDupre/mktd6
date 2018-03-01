@@ -186,8 +186,8 @@ public class Chapter02_BranchingAndMerging extends EmbeddedClusterBoilerplate {
         // map the invalid orders back into key:Void/value:String
         // to INVALID_ORDERS topic
 
-        // filter the BUY  orders using tooManySharesInOrder
-        // filter the SELL orders using tooManySharesInOrder
+        // filter/filterNot the BUY  orders using tooManySharesInOrder
+        // filter/filterNot the SELL orders using tooManySharesInOrder
         // merge back the valid orders
         // to the VALID_ORDERS topic
 
@@ -229,6 +229,12 @@ public class Chapter02_BranchingAndMerging extends EmbeddedClusterBoilerplate {
         }
     }
 
+    /**
+     * We don't want Kerviel level catastrophes anymore.
+     * Orders too big are forbidden.
+     * Use this method to keep only the orders buying/selling
+     * less than 1000 shares.
+     */
     private boolean tooManySharesInOrder(String s, MarketOrder marketOrder) {
         return marketOrder.getShares() > 1000;
     }

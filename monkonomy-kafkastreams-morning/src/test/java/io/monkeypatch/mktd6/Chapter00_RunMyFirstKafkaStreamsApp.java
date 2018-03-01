@@ -67,9 +67,9 @@ public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerpl
      * containing "BUY" if we think we should buy, or "SELL" if we think
      * we should sell, based only on the forecast.
      */
-    protected void buildStreamTopology(StreamsBuilder streamsBuilder) {
+    protected void buildStreamTopology(StreamsBuilder builder) {
         // We read from the share price topic
-        streamsBuilder.<String, SharePriceInfo>stream(SHARE_PRICE_TOPIC_NAME)
+        builder.<String, SharePriceInfo>stream(SHARE_PRICE_TOPIC_NAME)
 
             // .peek allows to add dirty IO for stream events
             .peek((k, v) -> System.out.println(k + " = " + v))

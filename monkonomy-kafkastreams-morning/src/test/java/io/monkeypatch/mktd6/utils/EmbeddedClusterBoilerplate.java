@@ -2,6 +2,7 @@ package io.monkeypatch.mktd6.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
+import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -57,12 +58,21 @@ public abstract class EmbeddedClusterBoilerplate {
         kafkaStreams.start();
     }
 
-    protected abstract void buildStreamTopology(StreamsBuilder streamsBuilder);
+    protected abstract void buildStreamTopology(StreamsBuilder builder);
 
     protected <K,V> void sendValues(TopicDef<K, V> topicDef, List<V> values) throws Exception {
         IntegrationTestUtils.produceValuesSynchronously(
             topicDef.getTopicName(),
             values,
+            helper.producerConfig(topicDef, false),
+            mockTime);
+    }
+
+
+    protected <K,V> void sendKeyValues(TopicDef<K, V> topicDef, List<KeyValue<K, V>> kvs) throws Exception {
+        IntegrationTestUtils.produceKeyValuesSynchronously(
+            topicDef.getTopicName(),
+            kvs,
             helper.producerConfig(topicDef, false),
             mockTime);
     }

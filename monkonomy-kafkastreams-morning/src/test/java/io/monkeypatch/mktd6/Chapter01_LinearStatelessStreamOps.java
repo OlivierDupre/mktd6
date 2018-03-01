@@ -128,8 +128,8 @@ public class Chapter01_LinearStatelessStreamOps extends EmbeddedClusterBoilerpla
      * </p>
      *
      */
-    protected void buildStreamTopology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
+    protected void buildStreamTopology(StreamsBuilder builder) {
+        builder
             .stream(
                 GIBB_TOPIC.getTopicName(),
                 helper.consumed(GIBB_TOPIC)
