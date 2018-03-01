@@ -48,7 +48,7 @@ public class MonkonomyServer {
 
         KafkaStreams kafkaStreams = new KafkaStreams(
             buildTopology(),
-            boilerplate.streamsConfig());
+            boilerplate.streamsConfig(false));
 
         executor.scheduleAtFixedRate(
             () -> LOG.info(kafkaStreams.toString()),

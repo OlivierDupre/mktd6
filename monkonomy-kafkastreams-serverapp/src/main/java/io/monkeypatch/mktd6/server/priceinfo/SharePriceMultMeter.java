@@ -42,7 +42,7 @@ public class SharePriceMultMeter {
     public void run() {
         TopicDef<String, SharePriceMult> topic = TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
         String topicName = topic.getTopicName();
-        Properties producerConfig = boilerplate.producerConfig(topic);
+        Properties producerConfig = boilerplate.producerConfig(topic, false);
         KafkaProducer<String, SharePriceMult> producer = new KafkaProducer<>(producerConfig);
 
         executor.scheduleAtFixedRate(

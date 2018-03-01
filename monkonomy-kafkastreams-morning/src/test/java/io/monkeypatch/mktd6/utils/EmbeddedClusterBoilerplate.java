@@ -1,5 +1,6 @@
 package io.monkeypatch.mktd6.utils;
 
+import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Time;
@@ -22,8 +23,11 @@ import static org.junit.Assert.assertThat;
 public abstract class EmbeddedClusterBoilerplate {
 
     protected static final int NUM_BROKERS = 1;
+
     @ClassRule
     public static final EmbeddedKafkaCluster EMBEDDED_KAFKA = new EmbeddedKafkaCluster(NUM_BROKERS);
+
+    protected final KafkaStreamsBoilerplate helper = new KafkaStreamsBoilerplate(EMBEDDED_KAFKA.bootstrapServers(), this.getClass().getSimpleName());
 
     protected static final Time mockTime = Time.SYSTEM;
 
@@ -36,7 +40,7 @@ public abstract class EmbeddedClusterBoilerplate {
     }
 
     protected <K, V> void buildTopologyAndLaunchKafka(TopicDef<K,V> topicDef) {
-        StreamsConfig streamsConfig = getStreamsConfig(topicDef);
+        StreamsConfig streamsConfig = helper.streamsConfig(topicDef, false);
 
         // Create the StreamsBuilder which will help us declare
         // the streaming topology.
@@ -51,50 +55,20 @@ public abstract class EmbeddedClusterBoilerplate {
 
     protected abstract void buildStreamTopology(StreamsBuilder streamsBuilder);
 
-    public static <K, V> Properties consumerConfig(TopicDef<K, V> topic) {
-        return TestUtils.consumerConfig(
-                EMBEDDED_KAFKA.bootstrapServers(),
-                topic.getKeyDeserializerClass(),
-                topic.getValueDeserializerClass());
-    }
-
-    public static <K, V> Properties producerConfig(TopicDef<K, V> topic) {
-        return TestUtils.producerConfig(
-                EMBEDDED_KAFKA.bootstrapServers(),
-                topic.getKeySerializerClass(),
-                topic.getValueSerializerClass());
-    }
-
-    protected <K, V> StreamsConfig getStreamsConfig(TopicDef<K, V> topicDef) {
-        Properties properties = getStreamsConfigProperties(topicDef);
-        return new StreamsConfig(properties);
-    }
-
-    protected <K, V> Properties getStreamsConfigProperties(TopicDef<K, V> topicDef) {
-        Properties properties = StreamsTestUtils.getStreamsConfig(
-                this.getClass().getSimpleName(),
-                EMBEDDED_KAFKA.bootstrapServers(),
-                topicDef.getKeySerdeClass().getName(),
-                topicDef.getValueSerdeClass().getName(),
-                new Properties());
-        properties.put(IntegrationTestUtils.INTERNAL_LEAVE_GROUP_ON_CLOSE, true);
-        return properties;
-    }
-
     protected <K,V> void sendValues(TopicDef<K, V> topicDef, List<V> values) throws Exception {
         IntegrationTestUtils.produceValuesSynchronously(
-                topicDef.getTopicName(),
-                values,
-                producerConfig(topicDef),
-                mockTime);
+            topicDef.getTopicName(),
+            values,
+            helper.producerConfig(topicDef, false),
+            mockTime);
     }
 
     protected <K,V> void assertValuesReceivedOnTopic(TopicDef<K, V> topicDef, List<V> expected) throws Exception {
         List<String> actual = IntegrationTestUtils
-                .waitUntilMinValuesRecordsReceived(
-                        consumerConfig(topicDef),
-                        topicDef.getTopicName(),
-                        expected.size());
+            .waitUntilMinValuesRecordsReceived(
+                helper.consumerConfig(topicDef),
+                topicDef.getTopicName(),
+                expected.size());
         assertThat(actual, equalTo(expected));
     }
 

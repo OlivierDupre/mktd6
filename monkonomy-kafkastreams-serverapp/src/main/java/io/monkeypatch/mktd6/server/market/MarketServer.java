@@ -52,7 +52,9 @@ public class MarketServer  implements TopologySupplier {
                 .merge(investmentsStateUpdaters);
 
         updates.to(traderUpdates.getTopicName(), helper.produced(traderUpdates));
-        
+
+
+
         return builder;
     }
 

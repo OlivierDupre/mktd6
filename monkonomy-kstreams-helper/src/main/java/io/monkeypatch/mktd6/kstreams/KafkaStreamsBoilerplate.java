@@ -47,40 +47,53 @@ public class KafkaStreamsBoilerplate {
         return consumerConfig(topic, Collections.emptyMap());
     }
 
-    public <K, V> Properties producerConfig(TopicDef<K, V> topic, Map<String, String> additional) {
+    public <K, V> Properties producerConfig(TopicDef<K, V> topic, boolean exactlyOnce,  Map<String, String> additional) {
         Properties properties = new Properties();
+
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
-        properties.put(ProducerConfig.RETRIES_CONFIG, 0);
+        properties.put(ProducerConfig.RETRIES_CONFIG, 3);
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, topic.getKeySerializerClass().getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, topic.getValueSerializerClass().getName());
-        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        if (exactlyOnce) {
+            properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        }
         properties.putAll(additional);
         return properties;
     }
 
-    public <K, V> Properties producerConfig(TopicDef<K, V> topic) {
-        return producerConfig(topic, Collections.emptyMap());
+    public <K, V> Properties producerConfig(TopicDef<K, V> topic, boolean exactlyOnce) {
+        return producerConfig(topic, exactlyOnce, Collections.emptyMap());
     }
 
-    public Properties streamsConfigProps() {
+    public Properties streamsConfigProps(boolean exactlyOnce) {
         Properties streamsConfiguration = new Properties();
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-
-        streamsConfiguration.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
-
         streamsConfiguration.put(StreamsConfig.METADATA_MAX_AGE_CONFIG, "1000");
         streamsConfiguration.put(StreamsConfig.STATE_DIR_CONFIG, tempDirectory().getPath());
         streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
         streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        if (exactlyOnce) {
+            streamsConfiguration.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
+        }
         return streamsConfiguration;
     }
 
-    public StreamsConfig streamsConfig() {
-        return new StreamsConfig(streamsConfigProps());
+    protected <K, V> Properties streamsConfigProps(TopicDef<K, V> topicDef, boolean exactlyOnce) {
+        Properties properties = streamsConfigProps(exactlyOnce);
+        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, topicDef.getKeySerde().getClass().getName());
+        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, topicDef.getValueSerde().getClass().getName());
+        return properties;
     }
 
+    public StreamsConfig streamsConfig(boolean exactlyOnce) {
+        return new StreamsConfig(streamsConfigProps(exactlyOnce));
+    }
+
+    public <K,V> StreamsConfig streamsConfig(TopicDef<K,V> topicDef, boolean exactlyOnce) {
+        return new StreamsConfig(streamsConfigProps(topicDef, exactlyOnce));
+    }
 
     public <K,V> Consumed<K,V> consumed(TopicDef<K, V> topicDef) {
         return Consumed

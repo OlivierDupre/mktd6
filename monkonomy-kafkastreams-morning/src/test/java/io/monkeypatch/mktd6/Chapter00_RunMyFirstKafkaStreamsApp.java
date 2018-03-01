@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * Here, we write and run our very first Kafka Streams app.
  *
- * Most of the boilerplate is hidden away in the parent class,
+ * <p>Most of the boilerplate is hidden away in the parent class,
  * which will be used in all chapters. You may take a look at
  * this class, or skip it entirely. Its purpose it to hide away
  * the tedious details of how to configure and run a Kafka Streams
@@ -21,16 +21,19 @@ import java.util.Arrays;
  * in actual code, so some of it is hidden away, and only the
  * strictly necessary boilerplate code is shown.
  *
- * Your job is to complete the {@link #buildStreamTopology(StreamsBuilder)}
+ * <p>Your job is to complete the {@link #buildStreamTopology(StreamsBuilder)}
  * method.
  *
- * In order to run our first simple KafkaStreams application,
+ * <p>In order to run our first simple KafkaStreams application,
  * we use an embedded kafka cluster. This technique can be used in
  * tests and during development, to prevent the need for an
  * actual Kafka cluster, but it is heavy on resources and should
  * not necessarily be the default choice for unit tests.
  */
 public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerplate {
+
+    //==========================================================================
+    //==== ASSETS
 
     // We will be reading from this topic.
     // (TopicDef is a helper class that is not part of Kafka.)
@@ -44,28 +47,23 @@ public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerpl
         new JsonSerde.StringSerde(),  // Keys are Strings
         new JsonSerde.StringSerde()); // Values are Strings
 
-    // Now for some tedious ceremony for this stream.
-    // Look at it once, and then ignore it in future chapters.
-    @Before
-    public void setUp() throws Exception {
-        // Create the topics in the embedded cluster
-        createTopics(SHARE_PRICE_TOPIC, BUY_OR_SELL_TOPIC);
-        // Create the configurations, connecting to the correct cluster
-        // and providing the correct serialization/deserialization logic
-        buildTopologyAndLaunchKafka(SHARE_PRICE_TOPIC);
-    }
+
+    //==========================================================================
+    //==== YOUR MISSION, SHOULD YOU DECIDE TO ACCEPT IT
 
     /**
      * We want to decide whether we should buy or sell shares in the market.
      *
-     * We are given a stream of SharePriceInfo, containing a price forecast.
+     * <p>We are given a stream of SharePriceInfo, containing a price forecast.
      * The forecast is a multiplicator (always a positive number):
-     * - if it is greater than 1, it means the price is likely to go up
-     * - if it is lower than 1, it means the price is likely to go down.
+     * <ul>
+     * <li>if it is greater than 1, it means the price is likely to go up
+     * <li>if it is lower than 1, it means the price is likely to go down.
+     * </ul>
      *
-     * We will be coding how to create such a forecast in a later chapter.
+     * <p>We will be coding how to create such a forecast in a later chapter.
      *
-     * For now, we want to convert each SharePriceInfo into a String
+     * <p>For now, we want to convert each SharePriceInfo into a String
      * containing "BUY" if we think we should buy, or "SELL" if we think
      * we should sell, based only on the forecast.
      */
@@ -89,6 +87,20 @@ public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerpl
 
             // We write our results to the buy-or-sell topic.
             .to(BUY_OR_SELL_TOPIC_NAME);
+    }
+
+    //==========================================================================
+    //==== TEST LOGIC
+
+    // Now for some tedious ceremony for this stream.
+    // Look at it once, and then ignore it in future chapters.
+    @Before
+    public void setUp() throws Exception {
+        // Create the topics in the embedded cluster
+        createTopics(SHARE_PRICE_TOPIC, BUY_OR_SELL_TOPIC);
+        // Create the configurations, connecting to the correct cluster
+        // and providing the correct serialization/deserialization logic
+        buildTopologyAndLaunchKafka(SHARE_PRICE_TOPIC);
     }
 
     @Test

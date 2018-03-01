@@ -41,7 +41,7 @@ public class GibberServer {
 
     public void run(List<String> twitterFilter) {
         KafkaProducer<String, Gibb> producer =
-                new KafkaProducer<>(boilerplate.producerConfig(TopicDef.GIBBS));
+                new KafkaProducer<>(boilerplate.producerConfig(TopicDef.GIBBS, false));
 
         TwitterStream stream = getTwitterStream();
         stream.addListener(new StatusAdapter(){
