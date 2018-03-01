@@ -1,5 +1,6 @@
 package io.monkeypatch.mktd6.serde;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -49,6 +50,15 @@ public class BaseJsonSerde<T> implements Serde<T>, Serializer<T>, Deserializer<T
         }
         catch (Exception e) {
             throw new SerializationException("Error serializing JSON message", e);
+        }
+    }
+
+    public String toJson(T obj) {
+        try {
+            return this.mapper.writeValueAsString(obj);
+        }
+        catch (JsonProcessingException e) {
+            return "oups";
         }
     }
 

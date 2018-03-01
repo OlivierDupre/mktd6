@@ -1,10 +1,14 @@
 package io.monkeypatch.mktd6.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
+import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 import io.monkeypatch.mktd6.topic.TopicDef;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.integration.utils.EmbeddedKafkaCluster;
@@ -61,6 +65,17 @@ public abstract class EmbeddedClusterBoilerplate {
             values,
             helper.producerConfig(topicDef, false),
             mockTime);
+    }
+
+
+    protected <K,V> List<KeyValue<K,V>> recordsConsumedOnTopic(
+        TopicDef<K, V> topicDef,
+        int number
+    ) throws Exception {
+        return IntegrationTestUtils.waitUntilMinKeyValueRecordsReceived(
+            helper.consumerConfig(topicDef),
+            topicDef.getTopicName(),
+            number);
     }
 
     protected <K,V> void assertValuesReceivedOnTopic(TopicDef<K, V> topicDef, List<V> expected) throws Exception {

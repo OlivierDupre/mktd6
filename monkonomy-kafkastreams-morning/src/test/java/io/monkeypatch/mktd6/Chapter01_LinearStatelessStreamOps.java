@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  *     ---o----o----o----o----
  * </pre>
  *
- * <h3>What are these topologies anyway?</h3>
+ * <h3>What are these <a href="https://docs.confluent.io/current/streams/architecture.html#processor-topology">topologies</a> anyway?</h3>
  *
  * <p>A topology, in Kafka Streams jargon, is a <b>directed acyclic graph (DAG)</b>
  * of operations. In more cluster-oriented technologies, like Flink or Storm,
