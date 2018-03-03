@@ -14,6 +14,9 @@ public class JsonSerde {
     public static class StringSerde extends BaseJsonSerde<String> {
         public StringSerde() { super(String.class); }
     }
+    public static class DoubleSerde extends BaseJsonSerde<Double> {
+        public DoubleSerde() { super(Double.class); }
+    }
     public static class VoidSerde extends BaseJsonSerde<Void> {
         public VoidSerde() { super(Void.class); }
     }
