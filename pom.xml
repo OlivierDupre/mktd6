@@ -15,12 +15,44 @@
     </properties>
 
     <modules>
-        <module>twitter2kafka</module>
         <module>monkonomy-model</module>
         <module>monkonomy-kstreams-helper</module>
         <module>monkonomy-kafkastreams-morning</module>
         <module>monkonomy-kafkastreams-serverapp</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <version>2.9</version>
+                            <reportSets>
+                                <reportSet>
+                                    <id>aggregate</id>
+                                    <reports>
+                                        <report>aggregate</report>
+                                        <report>test-aggregate</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+                            <configuration>
+                                <!-- Here you can add special configurations for your javadoc, if needed -->
+                            </configuration>
+                        </plugin>
+                        <!-- Here you can also configure more report plugins -->
+                        <!-- for your site, such as maven-project-info-reports-plugin -->
+                    </reportPlugins>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
