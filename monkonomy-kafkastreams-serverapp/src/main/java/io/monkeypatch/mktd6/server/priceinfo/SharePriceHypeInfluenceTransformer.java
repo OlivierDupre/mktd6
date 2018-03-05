@@ -1,6 +1,6 @@
 package io.monkeypatch.mktd6.server.priceinfo;
 
-import io.monkeypatch.mktd6.server.model.StateConstants;
+import io.monkeypatch.mktd6.server.model.ServerStoreConstants;
 import org.apache.kafka.streams.kstream.ValueTransformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -33,20 +33,20 @@ public class SharePriceHypeInfluenceTransformer implements ValueTransformer<Doub
 
     @Override
     public Double transform(Double value) {
-        stateStore.putIfAbsent(StateConstants.BURSTS_KEY, 0d);
+        stateStore.putIfAbsent(ServerStoreConstants.BURSTS_KEY, 0d);
 
-        double bursts = stateStore.get(StateConstants.BURSTS_KEY);
+        double bursts = stateStore.get(ServerStoreConstants.BURSTS_KEY);
         double diff = value - bursts;
 
         // The more hype, the more risk of the burst of a hype bubble...
         if (random.nextDouble() < diff * 0.01) {
             diff = diff / 2;
             bursts = bursts + diff;
-            stateStore.put(StateConstants.BURSTS_KEY, bursts);
+            stateStore.put(ServerStoreConstants.BURSTS_KEY, bursts);
             LOG.info("BubbleBurst!!!: -{}", diff);
         }
 
-        stateStore.put(StateConstants.PRICE_HYPE_COMPONENT_KEY, diff);
+        stateStore.put(ServerStoreConstants.PRICE_HYPE_COMPONENT_KEY, diff);
         LOG.info(String.format("Influence: %.5f - %.5f = %.5f", value, bursts, diff));
         return diff;
     }

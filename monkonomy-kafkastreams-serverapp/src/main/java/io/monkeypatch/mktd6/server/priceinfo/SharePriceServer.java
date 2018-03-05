@@ -6,15 +6,12 @@ import io.monkeypatch.mktd6.model.gibber.Gibb;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
 import io.monkeypatch.mktd6.model.market.SharePriceMult;
 import io.monkeypatch.mktd6.server.model.ShareHypePiece;
-import io.monkeypatch.mktd6.server.model.StateStores;
-import io.monkeypatch.mktd6.server.model.Topics;
+import io.monkeypatch.mktd6.server.model.ServerStores;
+import io.monkeypatch.mktd6.server.model.ServerTopics;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Serialized;
+import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +42,8 @@ public class SharePriceServer implements TopologySupplier {
     ) {
         TopicDef<String, Gibb> gibbs = TopicDef.GIBBS;
         TopicDef<String, SharePriceMult> priceMults = TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
-        TopicDef<String, ShareHypePiece> shareHypeTopic = Topics.SHARE_HYPE;
-        String priceStoreName = StateStores.PRICE_VALUE_STORE.getStoreName();
+        TopicDef<String, ShareHypePiece> shareHypeTopic = ServerTopics.SHARE_HYPE;
+        String priceStoreName = ServerStores.PRICE_VALUE_STORE.getStoreName();
 
         // Fetch the stream of (random) multipliers
         KStream<String, Double> sharePriceBase = builder
@@ -59,6 +56,7 @@ public class SharePriceServer implements TopologySupplier {
                 Materialized.with(Serdes.String(), Serdes.Double()))
             .toStream()
         ;
+        sharePriceBase.print(Printed.toSysOut());
 
         // Compute the hype
         KStream<String, ShareHypePiece> hypePieces = builder

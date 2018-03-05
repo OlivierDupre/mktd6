@@ -2,22 +2,18 @@ package io.monkeypatch.mktd6.server;
 
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
-import io.monkeypatch.mktd6.server.model.StateStores;
+import io.monkeypatch.mktd6.server.market.MarketServer;
+import io.monkeypatch.mktd6.server.model.ServerStores;
 import io.monkeypatch.mktd6.server.priceinfo.SharePriceMultMeter;
 import io.monkeypatch.mktd6.server.priceinfo.SharePriceServer;
-import org.apache.kafka.common.serialization.Serdes;
+import io.monkeypatch.mktd6.server.trader.SimpleTrader;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
-import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.StoreBuilder;
-import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -65,15 +61,21 @@ public class MonkonomyServer {
         return getTopologyBuilders()
             .reduce(
                 builder,
-                (b, supplier) -> supplier.apply(boilerplate, b),
+                (b, supplier) -> {
+                    LOG.info("TopologyBuilder: {}", supplier.getClass().getName());
+                    return supplier.apply(boilerplate, b);
+                },
                 (l, r) -> l)
             .build();
     }
 
     private Stream<TopologySupplier> getTopologyBuilders() {
         return Stream.of(
-            (helper, builder) -> StateStores.PRICE_VALUE_STORE.addTo(builder),
-            new SharePriceServer()
+            (helper, builder) -> ServerStores.PRICE_VALUE_STORE.addTo(builder),
+            (helper, builder) -> ServerStores.TXN_INVESTMENT_STORE.addTo(builder),
+            new SharePriceServer(),
+            new MarketServer(),
+            new SimpleTrader("st0")
         );
     }
 
@@ -81,6 +83,7 @@ public class MonkonomyServer {
         KafkaStreamsBoilerplate helper = new KafkaStreamsBoilerplate(
                 "172.16.238.3:9092",
                 "monkonomy-server");
+
         new MonkonomyServer(helper).run();
     }
 

@@ -5,6 +5,7 @@ import io.monkeypatch.mktd6.model.market.SharePriceInfo;
 import io.monkeypatch.mktd6.model.market.SharePriceMult;
 import io.monkeypatch.mktd6.model.market.ops.TxnResult;
 import io.monkeypatch.mktd6.model.trader.Trader;
+import io.monkeypatch.mktd6.model.trader.TraderState;
 import io.monkeypatch.mktd6.model.trader.ops.FeedMonkeys;
 import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
@@ -23,6 +24,9 @@ public class JsonSerde {
 
     public static class TraderSerde extends BaseJsonSerde<Trader> {
         public TraderSerde() { super(Trader.class); }
+    }
+    public static class TraderStateSerde extends BaseJsonSerde<TraderState> {
+        public TraderStateSerde() { super(TraderState.class); }
     }
     public static class MarketOrderSerde extends BaseJsonSerde<MarketOrder> {
         public MarketOrderSerde() { super(MarketOrder.class); }

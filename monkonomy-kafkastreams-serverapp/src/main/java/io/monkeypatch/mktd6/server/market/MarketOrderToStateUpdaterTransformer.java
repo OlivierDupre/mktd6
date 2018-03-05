@@ -5,13 +5,11 @@ import io.monkeypatch.mktd6.server.model.TraderStateUpdater;
 import org.apache.kafka.streams.kstream.ValueTransformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.monkeypatch.mktd6.server.model.StateConstants.CURRENT_SHARE_PRICE_KEY;
+import static io.monkeypatch.mktd6.server.model.ServerStoreConstants.CURRENT_SHARE_PRICE_KEY;
 
 public class MarketOrderToStateUpdaterTransformer implements ValueTransformer<MarketOrder, TraderStateUpdater> {
 

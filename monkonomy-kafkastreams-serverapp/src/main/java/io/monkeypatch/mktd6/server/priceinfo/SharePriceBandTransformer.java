@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.monkeypatch.mktd6.server.model.StateConstants.*;
+import static io.monkeypatch.mktd6.server.model.ServerStoreConstants.*;
 
 public class SharePriceBandTransformer implements ValueTransformer<Double, SharePriceInfo> {
 

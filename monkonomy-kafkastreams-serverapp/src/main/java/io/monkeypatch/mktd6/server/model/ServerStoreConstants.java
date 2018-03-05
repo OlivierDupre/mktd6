@@ -1,6 +1,6 @@
 package io.monkeypatch.mktd6.server.model;
 
-public abstract class StateConstants {
+public abstract class ServerStoreConstants {
 
     public static final String BURSTS_KEY = "BURSTS";
     public static final String PRICE_HYPE_COMPONENT_KEY = "PRICE_HYPE_COMPONENT";

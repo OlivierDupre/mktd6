@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-mvn clean install site -DskipTests=true
+./mvnw clean install site -DskipTests=true

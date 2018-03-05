@@ -1,10 +1,11 @@
 package io.monkeypatch.mktd6.server.model;
 
 import io.monkeypatch.mktd6.model.trader.Trader;
+import io.monkeypatch.mktd6.model.trader.TraderState;
 import io.monkeypatch.mktd6.serde.JsonSerde;
 import io.monkeypatch.mktd6.topic.TopicDef;
 
-public class Topics {
+public class ServerTopics {
 
     public static final TopicDef<String, ShareHypePiece> SHARE_HYPE =
         new TopicDef<>(
@@ -17,4 +18,9 @@ public class Topics {
             "trader-state-updates",
             new JsonSerde.TraderSerde(),
             new TraderStateUpdater.Serde());
+
+    public static final TopicDef<Trader, TraderState> TRADER_STATES = new TopicDef<>(
+            "trader-states",
+            new JsonSerde.TraderSerde(),
+            new JsonSerde.TraderStateSerde());
 }
