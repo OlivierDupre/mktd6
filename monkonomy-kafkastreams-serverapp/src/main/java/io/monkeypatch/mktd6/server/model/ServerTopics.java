@@ -23,4 +23,10 @@ public class ServerTopics {
             "trader-states",
             new JsonSerde.TraderSerde(),
             new JsonSerde.TraderStateSerde());
+
+    public static final TopicDef<Trader, TxnEvent> INVESTMENT_TXN_EVENTS = new TopicDef<>(
+            "investment-txn-events",
+            new JsonSerde.TraderSerde(),
+            new TxnEvent.Serde());
+
 }

@@ -12,10 +12,13 @@ import io.monkeypatch.mktd6.serde.BaseJsonSerde;
 
 public final class TraderStateUpdater {
 
+    public static final TraderStateUpdater BAILOUT_UPDATER = new TraderStateUpdater("bailout", Type.BAILOUT, 10d, 5, true, 0);
+
     public enum Type {
         MARKET,
         INVEST,
         FEED,
+        BAILOUT,
         RETURN;
     }
 
@@ -82,11 +85,17 @@ public final class TraderStateUpdater {
             state.getBailouts() + (getAddBailout() ? 1 : 0),
             state.getFedMonkeys() + getFedMonkeys()
         );
+
+        // Bailout if needed !!!
+        if (type != Type.BAILOUT && (newState.getCoins() <= 1 || newState.getShares() <= 0)) {
+            newState = BAILOUT_UPDATER.update(newState).getState();
+        }
+
         TxnResultType status = newState.validate();
         TraderState keptState = status == TxnResultType.ACCEPTED
             ? newState
             : state;
-        return new TxnResult(txnId, keptState, status);
+        return new TxnResult(txnId, type.name(), keptState, status);
     }
 
     public static TraderStateUpdater from(MarketOrder order, double sharePrice) {

@@ -29,7 +29,6 @@ public class StateStoreHelper<K, V> {
     public StreamsBuilder addTo(StreamsBuilder builder) {
         KeyValueBytesStoreSupplier storeSupplier = Stores.inMemoryKeyValueStore(storeName);
         StoreBuilder<KeyValueStore<K, V>> storeBuilder = Stores.keyValueStoreBuilder(storeSupplier, keySerde, valueSerde);
-        builder.addStateStore(storeBuilder);
-        return builder;
+        return builder.addStateStore(storeBuilder);
     }
 }

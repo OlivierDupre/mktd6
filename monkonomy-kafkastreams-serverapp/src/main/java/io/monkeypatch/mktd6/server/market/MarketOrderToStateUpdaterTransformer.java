@@ -5,6 +5,8 @@ import io.monkeypatch.mktd6.server.model.TraderStateUpdater;
 import org.apache.kafka.streams.kstream.ValueTransformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -13,12 +15,13 @@ import static io.monkeypatch.mktd6.server.model.ServerStoreConstants.CURRENT_SHA
 
 public class MarketOrderToStateUpdaterTransformer implements ValueTransformer<MarketOrder, TraderStateUpdater> {
 
-    private KeyValueStore<String, Double> stateStore;
+    private static final Logger LOG = LoggerFactory.getLogger(MarketOrderToStateUpdaterTransformer.class);
+
     private final String storeName;
+    private KeyValueStore<String, Double> stateStore;
     private ProcessorContext context;
 
     public MarketOrderToStateUpdaterTransformer(String storeName) {
-        Objects.requireNonNull(storeName,"Store Name can't be null");
         this.storeName = storeName;
     }
 
@@ -31,6 +34,7 @@ public class MarketOrderToStateUpdaterTransformer implements ValueTransformer<Ma
 
     @Override
     public TraderStateUpdater transform(MarketOrder value) {
+        LOG.info("transform: {}", value);
         double currentPrice = Optional.ofNullable(stateStore.get(CURRENT_SHARE_PRICE_KEY)).orElse(1d);
         return TraderStateUpdater.from(value, currentPrice);
     }

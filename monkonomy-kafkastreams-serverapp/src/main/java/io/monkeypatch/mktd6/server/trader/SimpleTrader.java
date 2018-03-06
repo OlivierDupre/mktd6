@@ -12,10 +12,14 @@ import io.monkeypatch.mktd6.model.trader.ops.MarketOrderType;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleTrader implements TopologySupplier {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleTrader.class);
 
     private final String playerName;
     public final Trader trader;
@@ -53,6 +57,7 @@ public class SimpleTrader implements TopologySupplier {
                 MarketOrderType type = info.getForecast().getMult() > 1
                     ? MarketOrderType.BUY
                     : MarketOrderType.SELL;
+                LOG.info("Trader order: {}", type);
                 return KeyValue.pair(
                         trader,
                         MarketOrder.make(txnId(), type, 1)

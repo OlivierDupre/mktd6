@@ -3,18 +3,19 @@ package io.monkeypatch.mktd6.server.market;
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
 import io.monkeypatch.mktd6.model.market.ops.TxnResult;
+import io.monkeypatch.mktd6.model.market.ops.TxnResultType;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.model.trader.TraderState;
 import io.monkeypatch.mktd6.server.model.ServerStores;
 import io.monkeypatch.mktd6.server.model.TraderStateUpdater;
 import io.monkeypatch.mktd6.server.model.TxnEvent;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.kstream.KTable;
 
 import static io.monkeypatch.mktd6.server.model.ServerTopics.TRADER_STATES;
 import static io.monkeypatch.mktd6.server.model.ServerTopics.TRADER_UPDATES;
+import static io.monkeypatch.mktd6.server.model.ServerTopics.INVESTMENT_TXN_EVENTS;
 import static io.monkeypatch.mktd6.topic.TopicDef.*;
 
 /**
@@ -32,19 +33,20 @@ public class MarketServer  implements TopologySupplier {
 
     @Override
     public StreamsBuilder apply(KafkaStreamsBoilerplate helper, StreamsBuilder builder) {
-        String priceStoreName = ServerStores.PRICE_VALUE_STORE.getStoreName();
+        final String priceStoreName = ServerStores.PRICE_VALUE_STORE.getStoreName();
 
         KStream<Trader, TraderStateUpdater> orderStateUpdaters = builder
-                .stream(MARKET_ORDERS.getTopicName(), helper.consumed(MARKET_ORDERS))
-                .transformValues(() -> new MarketOrderToStateUpdaterTransformer(priceStoreName), priceStoreName);
+            .stream(MARKET_ORDERS.getTopicName(), helper.consumed(MARKET_ORDERS))
+            //.mapValues(mo -> TraderStateUpdater.from(mo, 1d));
+            .transformValues(() -> new MarketOrderToStateUpdaterTransformer(priceStoreName), priceStoreName);
 
         KStream<Trader, TraderStateUpdater> feedMonkeysStateUpdaters = builder
-                .stream(FEED_MONKEYS.getTopicName(), helper.consumed(FEED_MONKEYS))
-                .mapValues(fm -> TraderStateUpdater.from(fm));
+            .stream(FEED_MONKEYS.getTopicName(), helper.consumed(FEED_MONKEYS))
+            .mapValues(fm -> TraderStateUpdater.from(fm));
 
         KStream<Trader, TraderStateUpdater> investmentsStateUpdaters = builder
-                .stream(INVESTMENT_ORDERS.getTopicName(), helper.consumed(INVESTMENT_ORDERS))
-                .mapValues(investment -> TraderStateUpdater.from(investment));
+            .stream(INVESTMENT_ORDERS.getTopicName(), helper.consumed(INVESTMENT_ORDERS))
+            .mapValues(investment -> TraderStateUpdater.from(investment));
 
         KStream<Trader, TraderStateUpdater> updates = orderStateUpdaters
             .merge(feedMonkeysStateUpdaters)
@@ -53,13 +55,18 @@ public class MarketServer  implements TopologySupplier {
         // Updates are published to their own topic. This is useful because
         // return on investment will also be written to this topic.
 
-        GlobalKTable<Trader, TraderState> traderState = builder
-            .globalTable(TRADER_STATES.getTopicName(), helper.consumed(TRADER_STATES));
+        KTable<Trader, TraderState> traderState = builder
+            .table(TRADER_STATES.getTopicName(), helper.consumed(TRADER_STATES));
 
         KStream<Trader, TxnEvent> txnEvents = updates
-            .leftJoin(traderState, (k, v) -> k, this::getTxnEvent);
+            .leftJoin(traderState, this::getTxnEvent);
 
-        txnEvents.process(TxnEventProcessor::new);
+        // Send
+        txnEvents
+            .filter((k,v) -> isAcceptedInvestment(v))
+            .transformValues(() -> new TxnEventTransformer(helper),
+                    ServerStores.TXN_INVESTMENT_STORE.getStoreName())
+            .to(INVESTMENT_TXN_EVENTS.getTopicName(), helper.produced(INVESTMENT_TXN_EVENTS));
 
         KStream<Trader, TxnResult> txnResults = txnEvents
             .mapValues(TxnEvent::getTxnResult);
@@ -74,8 +81,13 @@ public class MarketServer  implements TopologySupplier {
         return builder;
     }
 
+    private boolean isAcceptedInvestment(TxnEvent v) {
+        return v.getTxnResult().getStatus() == TxnResultType.ACCEPTED
+        && v.getTxnResult().getType().equals(TraderStateUpdater.Type.INVEST.name());
+    }
+
     private TxnEvent getTxnEvent(TraderStateUpdater upd, TraderState state) {
-        return new TxnEvent(upd.update(state), upd);
+        return new TxnEvent(upd.update(state), Math.abs(upd.getCoinsDiff()));
     }
 
 }

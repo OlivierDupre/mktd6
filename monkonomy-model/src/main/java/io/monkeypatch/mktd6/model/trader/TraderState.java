@@ -1,6 +1,7 @@
 package io.monkeypatch.mktd6.model.trader;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.monkeypatch.mktd6.model.market.ops.TxnResultType;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -15,6 +16,19 @@ public class TraderState {
     private final int fedMonkeys;
 
     @JsonCreator
+    public TraderState(
+           @JsonProperty("time") DateTime time,
+           @JsonProperty("coins") double coins,
+           @JsonProperty("shares") int shares,
+           @JsonProperty("bailouts") int bailouts,
+           @JsonProperty("fedMonkeys") int fedMonkeys) {
+        this.time = time;
+        this.coins = coins;
+        this.shares = shares;
+        this.bailouts = bailouts;
+        this.fedMonkeys = fedMonkeys;
+    }
+
     public TraderState(double coins, int shares, int bailouts, int fedMonkeys) {
         this.time = now();
         this.coins = coins;

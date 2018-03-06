@@ -7,6 +7,8 @@ import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.commons.math3.distribution.LogNormalDistribution;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -20,7 +22,9 @@ import java.util.concurrent.TimeUnit;
  * It writes share price multiplicators every second to the
  * share price evolution topic.
  */
-public class SharePriceMultMeter {
+public class SharePriceMultMeter implements Runnable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SharePriceMultMeter.class);
 
     /**
      * Slightly biased increasing log-normal, very close to 1 though.
@@ -36,9 +40,12 @@ public class SharePriceMultMeter {
     }
 
     public SharePriceMult getMult() {
-        return SharePriceMult.make(logNorm.sample());
+        SharePriceMult mult = SharePriceMult.make(logNorm.sample());
+        LOG.info("Mult: {}", mult);
+        return mult;
     }
 
+    @Override
     public void run() {
         TopicDef<String, SharePriceMult> topic = TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
         String topicName = topic.getTopicName();
