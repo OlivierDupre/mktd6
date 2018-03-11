@@ -2,8 +2,6 @@ package io.monkeypatch.mktd6.model.market;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.monkeypatch.mktd6.model.gibber.Gibb;
-import io.monkeypatch.mktd6.serde.BaseJsonSerde;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

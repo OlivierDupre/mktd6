@@ -249,7 +249,7 @@ public class Chapter02_BranchingAndMerging extends EmbeddedClusterBoilerplate {
     }
 
     @Test
-    public void testUpOrDown() throws Exception {
+    public void test() throws Exception {
         sendValues(ORDER_TEXT, Arrays.asList(
             "player1 txn01 BUY 5",
             "player2 txn02 BUY 99999",

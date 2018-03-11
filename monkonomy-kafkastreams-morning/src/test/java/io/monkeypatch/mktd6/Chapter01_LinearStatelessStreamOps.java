@@ -9,14 +9,16 @@ import io.vavr.Tuple2;
 import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.ValueMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -192,7 +194,7 @@ public class Chapter01_LinearStatelessStreamOps extends EmbeddedClusterBoilerpla
     }
 
     @Test
-    public void testUpOrDown() throws Exception {
+    public void test() throws Exception {
         sendValues(GIBB_TOPIC, Arrays.asList(
             new Gibb("001", DateTime.now(DateTimeZone.UTC), "#mktd6 this is ignored"),
             new Gibb("002", DateTime.now(DateTimeZone.UTC), "#mktd6 #bananacoins are good!!!"),

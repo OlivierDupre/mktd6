@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>In Kafka Streams, the data which evolves is identified by the record key.
  * The record value represents the way the key evolves. So a {@link KTable}
  * will represent an aggregation, or a reduction, of the values for a given key.
+ * You can think of a table as a snapshot in time of a state for each key.
  * </p>
  *
  * <p>A {@link KTable} can be converted back to a {@link KStream}, retrieving
@@ -170,7 +171,7 @@ public class Chapter03_GroupingAndAggregating extends EmbeddedClusterBoilerplate
     }
 
     @Test
-    public void testUpOrDown() throws Exception {
+    public void test() throws Exception {
         // We send groups of investment orders every TIME_WINDOW_MILLIS
         exec.execute(() -> iterateSendingInvestments(TIME_WINDOW_MILLIS, () -> {
             sendInvestment("player1", Investment.make("txn01", 1));   // 1

@@ -1,11 +1,14 @@
 package io.monkeypatch.mktd6.kstreams;
 
+import io.monkeypatch.mktd6.model.trader.Trader;
+import io.monkeypatch.mktd6.model.trader.TraderState;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.kstream.Joined;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.processor.LogAndSkipOnInvalidTimestamp;
 import org.slf4j.Logger;
@@ -125,5 +128,9 @@ public class KafkaStreamsBoilerplate {
             }
         });
         return file;
+    }
+
+    public <K,VL,VR> Joined<K, VL, VR> joined(TopicDef<K, VL> tl, TopicDef<K, VR> tr) {
+        return Joined.with(tl.getKeySerde(), tl.getValueSerde(), tr.getValueSerde());
     }
 }

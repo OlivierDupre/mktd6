@@ -21,6 +21,9 @@ public class JsonSerde {
     public static class VoidSerde extends BaseJsonSerde<Void> {
         public VoidSerde() { super(Void.class); }
     }
+    public static class IntegerSerde extends BaseJsonSerde<Integer> {
+        public IntegerSerde() { super(Integer.class); }
+    }
 
     public static class TraderSerde extends BaseJsonSerde<Trader> {
         public TraderSerde() { super(Trader.class); }

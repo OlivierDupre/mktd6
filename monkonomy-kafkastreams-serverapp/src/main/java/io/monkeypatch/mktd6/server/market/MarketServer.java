@@ -13,9 +13,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 
-import static io.monkeypatch.mktd6.server.model.ServerTopics.TRADER_STATES;
-import static io.monkeypatch.mktd6.server.model.ServerTopics.TRADER_UPDATES;
-import static io.monkeypatch.mktd6.server.model.ServerTopics.INVESTMENT_TXN_EVENTS;
+import static io.monkeypatch.mktd6.server.model.ServerTopics.*;
 import static io.monkeypatch.mktd6.topic.TopicDef.*;
 
 /**

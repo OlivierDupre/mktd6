@@ -165,7 +165,7 @@ public class Chapter04_UsingStateStores extends EmbeddedClusterBoilerplate {
     }
 
     @Test
-    public void testUpOrDown() throws Exception {
+    public void test() throws Exception {
         sendValues(PRICES, Lists.newArrayList(
             priceInfo(1),
             priceInfo(2),

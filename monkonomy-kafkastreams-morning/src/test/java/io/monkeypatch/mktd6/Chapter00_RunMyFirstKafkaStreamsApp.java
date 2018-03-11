@@ -104,7 +104,7 @@ public class Chapter00_RunMyFirstKafkaStreamsApp extends EmbeddedClusterBoilerpl
     }
 
     @Test
-    public void testBuyOrSellLogic() throws Exception {
+    public void test() throws Exception {
         // Send this list of objects in the source topic.
         // (Don't worry about keys for now, only values are sent.)
         sendValues(SHARE_PRICE_TOPIC, Arrays.asList(
