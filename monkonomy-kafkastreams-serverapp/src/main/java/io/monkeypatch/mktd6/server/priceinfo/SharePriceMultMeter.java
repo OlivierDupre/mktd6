@@ -41,7 +41,7 @@ public class SharePriceMultMeter implements Runnable {
 
     public SharePriceMult getMult() {
         SharePriceMult mult = SharePriceMult.make(logNorm.sample());
-        LOG.info("Mult: {}", mult);
+        //LOG.info("Mult: {}", mult);
         return mult;
     }
 

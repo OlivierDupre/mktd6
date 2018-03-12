@@ -12,6 +12,8 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <kafka.version>1.0.1</kafka.version>
     </properties>
 
     <modules>
@@ -53,13 +55,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>0.9.2</version>
-        </dependency>
-    </dependencies>
 
 </project>

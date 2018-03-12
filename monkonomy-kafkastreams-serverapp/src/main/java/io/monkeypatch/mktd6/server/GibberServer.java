@@ -47,7 +47,7 @@ public class GibberServer {
         stream.addListener(new StatusAdapter(){
             @Override
             public void onStatus(Status status) {
-                LOG.info("Adding gibb: {}", status.getText());
+                //LOG.info("Adding gibb: {}", status.getText());
                 String id = Long.toHexString(status.getId());
                 DateTime time = DateTime.now(DateTimeZone.UTC);
                 producer.send(new ProducerRecord<>(

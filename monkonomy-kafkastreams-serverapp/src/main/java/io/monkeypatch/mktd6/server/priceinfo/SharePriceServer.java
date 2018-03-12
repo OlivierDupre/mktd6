@@ -55,15 +55,15 @@ public class SharePriceServer implements TopologySupplier {
                 (k, mult, acc) -> acc * mult,
                 Materialized.with(Serdes.String(), Serdes.Double()))
             .toStream()
+            //.peek((k,v) -> LOG.info("sharePriceBase = {}/{}", k, v))
         ;
-        sharePriceBase.print(Printed.toSysOut());
 
         // Compute the hype
         KStream<String, ShareHypePiece> hypePieces = builder
             .stream(gibbs.getTopicName(), helper.consumed(gibbs))
             .filter((k, v) -> selectGibb(v))
             .flatMapValues(ShareHypePiece::hypePieces)
-            .peek((k,v) -> LOG.info("HypePiece: {}", v.getWord()))
+            //.peek((k,v) -> LOG.info("HypePiece: {}", v.getWord()))
         ;
         hypePieces
             .to(shareHypeTopic.getTopicName(), helper.produced(shareHypeTopic));
@@ -83,7 +83,7 @@ public class SharePriceServer implements TopologySupplier {
             .transformValues(
                 () -> new SharePriceHypeInfluenceTransformer(priceStoreName),
                 priceStoreName)
-            .peek((k,v) -> LOG.info("HypePriceAdder: {}", v))
+            //.peek((k,v) -> LOG.info("HypePriceAdder: {}", v))
         ;
 
         // Compute the prices and output them to the dedicated topic

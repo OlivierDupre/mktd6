@@ -10,6 +10,8 @@ import io.monkeypatch.mktd6.model.trader.ops.FeedMonkeys;
 import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 
+import java.util.List;
+
 public class JsonSerde {
 
     public static class StringSerde extends BaseJsonSerde<String> {
@@ -23,6 +25,9 @@ public class JsonSerde {
     }
     public static class IntegerSerde extends BaseJsonSerde<Integer> {
         public IntegerSerde() { super(Integer.class); }
+    }
+    public static class ListSerde extends BaseJsonSerde<List> {
+        public ListSerde() { super(List.class); }
     }
 
     public static class TraderSerde extends BaseJsonSerde<Trader> {

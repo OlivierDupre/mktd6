@@ -1,22 +1,30 @@
 package io.monkeypatch.mktd6.server.trader;
 
+import com.google.common.collect.Lists;
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
 import io.monkeypatch.mktd6.model.Team;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
-import io.monkeypatch.mktd6.model.market.ops.TxnResult;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrderType;
-import io.monkeypatch.mktd6.topic.TopicDef;
+import io.monkeypatch.mktd6.serde.JsonSerde;
+import io.monkeypatch.mktd6.server.model.ServerStores;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.monkeypatch.mktd6.topic.TopicDef.*;
+
+@SuppressWarnings("unchecked")
 public class SimpleTrader implements TopologySupplier {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleTrader.class);
@@ -39,11 +47,6 @@ public class SimpleTrader implements TopologySupplier {
     public StreamsBuilder apply(KafkaStreamsBoilerplate helper,
                                 StreamsBuilder builder) {
 
-        TopicDef<String, SharePriceInfo> sharePrice = TopicDef.SHARE_PRICE;
-        TopicDef<Trader, MarketOrder> marketOrders = TopicDef.MARKET_ORDERS;
-        TopicDef<Trader, TxnResult> txnResults = TopicDef.TXN_RESULTS;
-        TopicDef<Trader, Investment> investmentOrders = TopicDef.INVESTMENT_ORDERS;
-
         // Look at the price forecast and follow the advice:
         // - if the forecast is > 1, meaning the price should increase,
         //   then BUY 1 share,
@@ -51,8 +54,9 @@ public class SimpleTrader implements TopologySupplier {
         //   then SELL 1 share.
         // Don't even care about looking at our assets, let the
         // market accept/reject the transaction.
-        builder
-            .stream(sharePrice.getTopicName(), helper.consumed(sharePrice))
+        KStream<String, SharePriceInfo> sharePrices = builder
+                .stream(SHARE_PRICE.getTopicName(), helper.consumed(SHARE_PRICE));
+        sharePrices
             .map((k, info) -> {
                 MarketOrderType type = info.getForecast().getMult() > 1
                     ? MarketOrderType.BUY
@@ -63,17 +67,47 @@ public class SimpleTrader implements TopologySupplier {
                         MarketOrder.make(txnId(), type, 1)
                 );
             })
-            .to(marketOrders.getTopicName(), helper.produced(marketOrders));
+            .to(MARKET_ORDERS.getTopicName(), helper.produced(MARKET_ORDERS));
+
+        KTable<Trader, SharePriceInfo> myPrices = sharePrices
+            .selectKey((k,v) -> trader)
+            .groupByKey(Serialized.with(
+                new JsonSerde.TraderSerde(),
+                new JsonSerde.SharePriceInfoSerde()))
+            .reduce((a, b) -> b);
 
         // Invest all your money whenever you have some.
         builder
-            .stream(txnResults.getTopicName(), helper.consumed(txnResults))
-            .filter((k, v) -> k.getName().equals(playerName) && v.getState().getCoins() > 0.1)
-            .mapValues(v -> Investment.make(txnId(), v.getState().getCoins()))
-            .to(investmentOrders.getTopicName(), helper.produced(investmentOrders));
+            .stream(TXN_RESULTS.getTopicName(), helper.consumed(TXN_RESULTS))
+            .mapValues(v -> v.getState().getCoins())
+            // Keep the price for 3 shares
+            .join(
+                myPrices,
+                (coins, priceInfo) -> coins - 3 * priceInfo.getCoins(),
+                Joined.with(new JsonSerde.TraderSerde(), Serdes.Double(), new JsonSerde.SharePriceInfoSerde())
+            )
+            // Throttle to not get more than 1 investment by second
+            .transform(() -> new TraderInvestmentTransformer(trader), ServerStores.TRADER_INVESTMENT.getStoreName())
+            .filter((k, v) -> v > 0)
+            .peek((k,v) -> LOG.info("Investing {}!!!", v))
+            // Create the investment
+            .mapValues(v -> Investment.make(txnId(), v))
+            .to(INVESTMENT_ORDERS.getTopicName(), helper.produced(INVESTMENT_ORDERS));
 
         // Never feed monkeys... (bad!)
 
         return builder;
+    }
+
+    private Iterable<KeyValue<Trader,Double>> last(Trader key, List<Double> ds) {
+        return ds.stream().reduce((a,b) -> b)
+            .map(d -> Lists.newArrayList(KeyValue.pair(trader, d)))
+            .orElseGet(Lists::newArrayList);
+    }
+
+    private ArrayList<Double> accList(Double v, ArrayList<Double> list) {
+        ArrayList<Double> result = new ArrayList<>(list);
+        result.add(v);
+        return result;
     }
 }

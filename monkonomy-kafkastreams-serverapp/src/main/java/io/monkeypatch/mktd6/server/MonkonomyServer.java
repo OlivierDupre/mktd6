@@ -58,11 +58,13 @@ public class MonkonomyServer implements Runnable {
             buildTopology(),
             boilerplate.streamsConfig(false));
 
+        /*//
         executor.scheduleAtFixedRate(
             () -> LOG.info(kafkaStreams.toString()),
             10,
             10,
             TimeUnit.SECONDS);
+        //*/
 
         executor.execute(kafkaStreams::start);
     }
@@ -85,6 +87,8 @@ public class MonkonomyServer implements Runnable {
         return Stream.of(
             (helper, builder) -> ServerStores.PRICE_VALUE_STORE.addTo(builder),
             (helper, builder) -> ServerStores.TXN_INVESTMENT_STORE.addTo(builder),
+            (helper, builder) -> ServerStores.STATE_STORE.addTo(builder),
+            (helper, builder) -> ServerStores.TRADER_INVESTMENT.addTo(builder),
             new SharePriceServer(),
             new MarketServer(),
             new SimpleTrader("st0")
@@ -111,7 +115,6 @@ public class MonkonomyServer implements Runnable {
             new NewTopic(TopicDef.TXN_RESULTS.getTopicName(), partitions, replication).configs(configs),
             new NewTopic(TopicDef.FEED_MONKEYS.getTopicName(), partitions, replication).configs(configs),
             new NewTopic(TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER.getTopicName(), partitions, replication).configs(configs),
-            new NewTopic(ServerTopics.TRADER_STATES.getTopicName(), partitions, replication).configs(configs),
             new NewTopic(ServerTopics.TRADER_UPDATES.getTopicName(), partitions, replication).configs(configs),
             new NewTopic(ServerTopics.SHARE_HYPE.getTopicName(), partitions, replication).configs(configs),
             new NewTopic(ServerTopics.INVESTMENT_TXN_EVENTS.getTopicName(), partitions, replication).configs(configs)

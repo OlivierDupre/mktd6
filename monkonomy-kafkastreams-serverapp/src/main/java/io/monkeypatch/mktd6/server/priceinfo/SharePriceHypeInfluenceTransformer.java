@@ -47,7 +47,7 @@ public class SharePriceHypeInfluenceTransformer implements ValueTransformer<Doub
         }
 
         stateStore.put(ServerStoreConstants.PRICE_HYPE_COMPONENT_KEY, diff);
-        LOG.info(String.format("Influence: %.5f - %.5f = %.5f", value, bursts, diff));
+        //LOG.info(String.format("Influence: %.5f - %.5f = %.5f", value, bursts, diff));
         return diff;
     }
 

@@ -17,31 +17,10 @@
             <artifactId>monkonomy-model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams</artifactId>
-            <version>RELEASE</version>
+            <version>${kafka.version}</version>
         </dependency>
     </dependencies>
 

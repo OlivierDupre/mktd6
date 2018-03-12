@@ -13,6 +13,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 
+import static io.monkeypatch.mktd6.server.model.ServerStores.STATE_STORE;
 import static io.monkeypatch.mktd6.server.model.ServerTopics.*;
 import static io.monkeypatch.mktd6.topic.TopicDef.*;
 
@@ -53,11 +54,9 @@ public class MarketServer  implements TopologySupplier {
         // Updates are published to their own topic. This is useful because
         // return on investment will also be written to this topic.
 
-        KTable<Trader, TraderState> traderState = builder
-            .table(TRADER_STATES.getTopicName(), helper.consumed(TRADER_STATES));
-
-        KStream<Trader, TxnEvent> txnEvents = updates
-            .leftJoin(traderState, this::getTxnEvent);
+        KStream<Trader, TxnEvent> txnEvents = updates.transform(
+            TraderUpdaterToStateTransformer::new,
+            STATE_STORE.getStoreName());
 
         // Send
         txnEvents
@@ -66,15 +65,9 @@ public class MarketServer  implements TopologySupplier {
                     ServerStores.TXN_INVESTMENT_STORE.getStoreName())
             .to(INVESTMENT_TXN_EVENTS.getTopicName(), helper.produced(INVESTMENT_TXN_EVENTS));
 
-        KStream<Trader, TxnResult> txnResults = txnEvents
-            .mapValues(TxnEvent::getTxnResult);
-
-        // Write the states back to the topic to feed the traderState global table...
-        txnResults
-            .mapValues(TxnResult::getState)
-            .to(TRADER_STATES.getTopicName(), helper.produced(TRADER_STATES));
-
-        txnResults.to(TXN_RESULTS.getTopicName(), helper.produced(TXN_RESULTS));
+        txnEvents
+            .mapValues(TxnEvent::getTxnResult)
+            .to(TXN_RESULTS.getTopicName(), helper.produced(TXN_RESULTS));
 
         return builder;
     }

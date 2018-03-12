@@ -48,7 +48,7 @@ public class SharePriceBandTransformer implements ValueTransformer<Double, Share
         double forecastMult = movingAverage / newValue;
         SharePriceInfo result = SharePriceInfo.make(newValue, forecastMult);
         stateStore.put(CURRENT_SHARE_PRICE_KEY, newValue);
-        LOG.info("PriceInfo: {}", newValue);
+        //LOG.info("PriceInfo: {}", newValue);
         return result;
     }
 

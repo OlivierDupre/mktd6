@@ -9,6 +9,8 @@ import io.monkeypatch.mktd6.model.trader.ops.FeedMonkeys;
 import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 import io.monkeypatch.mktd6.serde.BaseJsonSerde;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public final class TraderStateUpdater {
 
@@ -24,6 +26,7 @@ public final class TraderStateUpdater {
 
     private final String txnId;
     private final Type type;
+    private final DateTime time;
 
     private final double coinsDiff;
     private final int sharesDiff;
@@ -34,6 +37,7 @@ public final class TraderStateUpdater {
     public TraderStateUpdater(
             @JsonProperty("txnId") String txnId,
             @JsonProperty("type") Type type,
+            @JsonProperty("time") DateTime time,
             @JsonProperty("coinsDiff") double coinsDiff,
             @JsonProperty("sharesDiff") int sharesDiff,
             @JsonProperty("addBailout") boolean addBailout,
@@ -41,10 +45,33 @@ public final class TraderStateUpdater {
     ) {
         this.txnId = txnId;
         this.type = type;
+        this.time = time;
         this.coinsDiff = coinsDiff;
         this.sharesDiff = sharesDiff;
         this.addBailout = addBailout;
         this.fedMonkeys = fedMonkeys;
+    }
+
+    public TraderStateUpdater(
+            String txnId,
+            Type type,
+            double coinsDiff,
+            int sharesDiff,
+            boolean addBailout,
+            int fedMonkeys
+    ) {
+        this.txnId = txnId;
+        this.type = type;
+        this.time = DateTime.now(DateTimeZone.UTC);
+        this.coinsDiff = coinsDiff;
+        this.sharesDiff = sharesDiff;
+        this.addBailout = addBailout;
+        this.fedMonkeys = fedMonkeys;
+    }
+
+
+    public DateTime getTime() {
+        return time;
     }
 
     public double getCoinsDiff() {

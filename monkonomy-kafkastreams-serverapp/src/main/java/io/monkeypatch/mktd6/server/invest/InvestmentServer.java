@@ -31,8 +31,6 @@ public class InvestmentServer implements Runnable {
     @Override
     public void run() {
         Properties producerProps = helper.producerConfig(ServerTopics.TRADER_UPDATES, false);
-
-
         Properties consumerProps = helper.consumerConfig(ServerTopics.INVESTMENT_TXN_EVENTS);
         try (
             KafkaConsumer<Trader, TxnEvent> consumer = new KafkaConsumer<>(consumerProps);
@@ -44,7 +42,6 @@ public class InvestmentServer implements Runnable {
                 records.forEach(record -> process(record, producer));
             }
         }
-
     }
 
     private void process(ConsumerRecord<Trader, TxnEvent> record, KafkaProducer<Trader, TraderStateUpdater> producer) {

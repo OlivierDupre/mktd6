@@ -33,7 +33,7 @@ public class MarketOrderToStateUpdaterTransformer implements ValueTransformer<Ma
 
     @Override
     public TraderStateUpdater transform(MarketOrder value) {
-        LOG.info("transform: {}", value);
+        //LOG.info("transform: {}", value);
         double currentPrice = Optional.ofNullable(stateStore.get(CURRENT_SHARE_PRICE_KEY)).orElse(1d);
         return TraderStateUpdater.from(value, currentPrice);
     }

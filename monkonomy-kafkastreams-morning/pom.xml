@@ -27,17 +27,17 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>1.0.0</version>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.12</artifactId>
-            <version>1.0.0</version>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.12</artifactId>
-            <version>1.0.0</version>
+            <version>${kafka.version}</version>
             <classifier>test</classifier>
         </dependency>
 
@@ -62,14 +62,14 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>1.0.0</version>
+            <version>${kafka.version}</version>
             <classifier>test</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>1.0.0</version>
+            <version>${kafka.version}</version>
             <classifier>test</classifier>
             <scope>test</scope>
         </dependency>

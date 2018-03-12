@@ -10,6 +10,7 @@ import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.Joined;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.Serialized;
 import org.apache.kafka.streams.processor.LogAndSkipOnInvalidTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,5 +133,9 @@ public class KafkaStreamsBoilerplate {
 
     public <K,VL,VR> Joined<K, VL, VR> joined(TopicDef<K, VL> tl, TopicDef<K, VR> tr) {
         return Joined.with(tl.getKeySerde(), tl.getValueSerde(), tr.getValueSerde());
+    }
+
+    public <K,V> Serialized<K,V> serialized(TopicDef<K,V> topicDef) {
+        return Serialized.with(topicDef.getKeySerde(), topicDef.getValueSerde());
     }
 }

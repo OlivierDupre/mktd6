@@ -66,7 +66,7 @@ public class ShareHypePiece {
         String clean = gibb.getText().toLowerCase()
                 .replaceAll("[^a-z \n]+", "")
                 .replaceAll("\\s+", " ");
-        LOG.info("Clean gibb: {}", clean);
+        //LOG.info("Clean gibb: {}", clean);
         return Arrays.stream(clean
             .split(" "))
             .flatMap(word -> {
