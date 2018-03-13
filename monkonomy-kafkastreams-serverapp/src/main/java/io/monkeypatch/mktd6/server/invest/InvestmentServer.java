@@ -6,6 +6,7 @@ import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.server.model.ServerTopics;
 import io.monkeypatch.mktd6.server.model.TraderStateUpdater;
 import io.monkeypatch.mktd6.server.model.TxnEvent;
+import org.apache.commons.math3.distribution.LogNormalDistribution;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -48,11 +49,17 @@ public class InvestmentServer implements Runnable {
         TxnEvent event = record.value();
         TxnResult result = event.getTxnResult();
 
+        double totalInvestments = record.value().getTotalInvestments();
+        long timeToWait = (long) totalInvestments;
+        double logNormalBiasReturn = Math.exp(-1 - (totalInvestments / 1000d));
+        LogNormalDistribution logNormal = new LogNormalDistribution(0.035 + logNormalBiasReturn, 0.01);
+        double investmentReturn = logNormal.sample();
+        
         executor.schedule(() -> {
             TraderStateUpdater updater = new TraderStateUpdater(
-                result.getTxnId()  + "-return",
+                result.getTxnId(),
                 TraderStateUpdater.Type.RETURN,
-                2 * event.getInvestedCoins(),
+                investmentReturn * event.getInvestedCoins(),
                 0,
                 false,
                 0,
@@ -62,6 +69,6 @@ public class InvestmentServer implements Runnable {
                 ServerTopics.TRADER_UPDATES.getTopicName(),
                 record.key(),
                 updater));
-        }, (long)record.value().getTotalInvestments(), TimeUnit.MILLISECONDS);
+        }, timeToWait, TimeUnit.MILLISECONDS);
     }
 }
