@@ -14,7 +14,8 @@ import org.joda.time.DateTimeZone;
 
 public final class TraderStateUpdater {
 
-    public static final TraderStateUpdater BAILOUT_UPDATER = new TraderStateUpdater("bailout", Type.BAILOUT, 10d, 5, true, 0);
+    public static final TraderStateUpdater BAILOUT_UPDATER =
+        new TraderStateUpdater("bailout", Type.BAILOUT, 10d, 5, true, 0, 0);
 
     public enum Type {
         MARKET,
@@ -32,6 +33,7 @@ public final class TraderStateUpdater {
     private final int sharesDiff;
     private final boolean addBailout;
     private final int fedMonkeys;
+    private final int investDiff;
 
     @JsonCreator
     public TraderStateUpdater(
@@ -41,7 +43,8 @@ public final class TraderStateUpdater {
             @JsonProperty("coinsDiff") double coinsDiff,
             @JsonProperty("sharesDiff") int sharesDiff,
             @JsonProperty("addBailout") boolean addBailout,
-            @JsonProperty("fedMonkeys") int fedMonkeys
+            @JsonProperty("fedMonkeys") int fedMonkeys,
+            @JsonProperty("investDiff") int investDiff
     ) {
         this.txnId = txnId;
         this.type = type;
@@ -50,6 +53,7 @@ public final class TraderStateUpdater {
         this.sharesDiff = sharesDiff;
         this.addBailout = addBailout;
         this.fedMonkeys = fedMonkeys;
+        this.investDiff = investDiff;
     }
 
     public TraderStateUpdater(
@@ -58,7 +62,8 @@ public final class TraderStateUpdater {
             double coinsDiff,
             int sharesDiff,
             boolean addBailout,
-            int fedMonkeys
+            int fedMonkeys,
+            int investDiff
     ) {
         this.txnId = txnId;
         this.type = type;
@@ -67,6 +72,7 @@ public final class TraderStateUpdater {
         this.sharesDiff = sharesDiff;
         this.addBailout = addBailout;
         this.fedMonkeys = fedMonkeys;
+        this.investDiff = investDiff;
     }
 
 
@@ -90,6 +96,10 @@ public final class TraderStateUpdater {
         return fedMonkeys;
     }
 
+    public int getInvestDiff() {
+        return investDiff;
+    }
+
     public Type getType() {
         return type;
     }
@@ -110,11 +120,14 @@ public final class TraderStateUpdater {
             state.getCoins() + getCoinsDiff(),
             state.getShares() + getSharesDiff(),
             state.getBailouts() + (getAddBailout() ? 1 : 0),
-            state.getFedMonkeys() + getFedMonkeys()
-        );
+            state.getFedMonkeys() + getFedMonkeys(),
+            state.getInFlightInvestments() + getInvestDiff());
 
         // Bailout if needed !!!
-        if (type != Type.BAILOUT && (newState.getCoins() <= 3 && newState.getShares() <= 0)) {
+        if (type != Type.BAILOUT &&
+            newState.getInFlightInvestments() <= 0 &&
+            newState.getCoins() <= 3 &&
+            newState.getShares() <= 0) {
             newState = BAILOUT_UPDATER.update(newState).getState();
         }
 
@@ -132,6 +145,7 @@ public final class TraderStateUpdater {
             order.getType().getCoinSign() * order.getShares() * sharePrice,
             order.getType().getShareSign() * order.getShares(),
             false,
+            0,
             0);
     }
 
@@ -142,7 +156,8 @@ public final class TraderStateUpdater {
             -1 * investment.getInvested(),
             0,
             false,
-            0);
+            0,
+            1);
     }
 
     public static TraderStateUpdater from(FeedMonkeys feed) {
@@ -152,7 +167,8 @@ public final class TraderStateUpdater {
             0,
             -1 * feed.getMonkeys(),
             false,
-            feed.getMonkeys());
+            feed.getMonkeys(),
+            0);
     }
 
 }

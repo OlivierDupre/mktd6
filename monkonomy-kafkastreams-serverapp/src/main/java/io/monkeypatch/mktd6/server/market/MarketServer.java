@@ -62,8 +62,9 @@ public class MarketServer  implements TopologySupplier {
         // Send
         txnEvents
             .filter((k,v) -> isAcceptedInvestment(v))
-            .transformValues(() -> new TxnEventTransformer(helper),
-                    ServerStores.TXN_INVESTMENT_STORE.getStoreName())
+            .transformValues(
+                TxnEventTransformer::new,
+                ServerStores.TXN_INVESTMENT_STORE.getStoreName())
             .to(INVESTMENT_TXN_EVENTS.getTopicName(), helper.produced(INVESTMENT_TXN_EVENTS));
 
         txnEvents

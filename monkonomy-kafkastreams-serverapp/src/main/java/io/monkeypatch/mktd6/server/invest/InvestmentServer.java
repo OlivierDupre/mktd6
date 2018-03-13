@@ -50,14 +50,15 @@ public class InvestmentServer implements Runnable {
 
         executor.schedule(() -> {
             TraderStateUpdater updater = new TraderStateUpdater(
-                    result.getTxnId()  + "-return",
-                    TraderStateUpdater.Type.RETURN,
-                    2 * event.getInvestedCoins(),
-                    0,
-                    false,
-                    0
+                result.getTxnId()  + "-return",
+                TraderStateUpdater.Type.RETURN,
+                2 * event.getInvestedCoins(),
+                0,
+                false,
+                0,
+                -1
             );
-            producer.send(new ProducerRecord<Trader, TraderStateUpdater>(
+            producer.send(new ProducerRecord<>(
                 ServerTopics.TRADER_UPDATES.getTopicName(),
                 record.key(),
                 updater));

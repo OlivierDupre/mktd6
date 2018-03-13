@@ -5,6 +5,7 @@ import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
 import io.monkeypatch.mktd6.model.Team;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
+import io.monkeypatch.mktd6.model.market.ops.TxnResultType;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
@@ -79,6 +80,8 @@ public class SimpleTrader implements TopologySupplier {
         // Invest all your money whenever you have some.
         builder
             .stream(TXN_RESULTS.getTopicName(), helper.consumed(TXN_RESULTS))
+            // Ignore rejected transactions
+            .filter((k,v) -> v.getStatus() == TxnResultType.ACCEPTED)
             .mapValues(v -> v.getState().getCoins())
             // Keep the price for 1 share
             .join(

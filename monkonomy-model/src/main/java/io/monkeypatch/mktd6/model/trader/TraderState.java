@@ -14,27 +14,31 @@ public class TraderState {
     private final int shares;
     private final int bailouts;
     private final int fedMonkeys;
+    private final int inFlightInvestments;
 
     @JsonCreator
     public TraderState(
-           @JsonProperty("time") DateTime time,
-           @JsonProperty("coins") double coins,
-           @JsonProperty("shares") int shares,
-           @JsonProperty("bailouts") int bailouts,
-           @JsonProperty("fedMonkeys") int fedMonkeys) {
+            @JsonProperty("time") DateTime time,
+            @JsonProperty("coins") double coins,
+            @JsonProperty("shares") int shares,
+            @JsonProperty("bailouts") int bailouts,
+            @JsonProperty("fedMonkeys") int fedMonkeys,
+            @JsonProperty("inFlightInvestments") int inFlightInvestments) {
         this.time = time;
         this.coins = coins;
         this.shares = shares;
         this.bailouts = bailouts;
         this.fedMonkeys = fedMonkeys;
+        this.inFlightInvestments = inFlightInvestments;
     }
 
-    public TraderState(double coins, int shares, int bailouts, int fedMonkeys) {
+    public TraderState(double coins, int shares, int bailouts, int fedMonkeys, int inFlightInvestments) {
         this.time = now();
         this.coins = coins;
         this.shares = shares;
         this.bailouts = bailouts;
         this.fedMonkeys = fedMonkeys;
+        this.inFlightInvestments = inFlightInvestments;
     }
 
     public DateTime getTime() {
@@ -57,6 +61,10 @@ public class TraderState {
         return fedMonkeys;
     }
 
+    public int getInFlightInvestments() {
+        return inFlightInvestments;
+    }
+
     public TxnResultType validate() {
         return
             (coins < 0) ? TxnResultType.INSUFFICIENT_COINS :
@@ -69,8 +77,8 @@ public class TraderState {
             10,
             5,
             0,
-            0
-        );
+            0,
+            0);
     }
 
     private static DateTime now() {

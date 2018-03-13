@@ -34,7 +34,7 @@ public class TraderUpdaterToStateTransformer implements Transformer<Trader, Trad
         double investedCoins =
                 result.getStatus() == TxnResultType.ACCEPTED &&
                 upd.getType() == TraderStateUpdater.Type.INVEST
-            ? upd.getCoinsDiff()
+            ? Math.abs(upd.getCoinsDiff())
             : 0;
         TxnEvent event = new TxnEvent(result, investedCoins);
         stateStore.put(trader, result.getState());

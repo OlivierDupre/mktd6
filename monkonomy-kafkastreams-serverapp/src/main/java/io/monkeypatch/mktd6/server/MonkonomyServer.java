@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -68,7 +67,7 @@ public class MonkonomyServer implements Runnable {
             buildTopology(),
             boilerplate.streamsConfig(false));
 
-        displayTopology(kafkaStreams);
+        //displayTopology(kafkaStreams);
 
         executor.execute(kafkaStreams::start);
     }
