@@ -114,7 +114,7 @@ public final class TraderStateUpdater {
         );
 
         // Bailout if needed !!!
-        if (type != Type.BAILOUT && (newState.getCoins() <= 1 && newState.getShares() <= 0)) {
+        if (type != Type.BAILOUT && (newState.getCoins() <= 3 && newState.getShares() <= 0)) {
             newState = BAILOUT_UPDATER.update(newState).getState();
         }
 

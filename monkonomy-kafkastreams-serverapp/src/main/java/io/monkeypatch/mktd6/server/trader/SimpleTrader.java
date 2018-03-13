@@ -83,7 +83,7 @@ public class SimpleTrader implements TopologySupplier {
             // Keep the price for 3 shares
             .join(
                 myPrices,
-                (coins, priceInfo) -> coins - 3 * priceInfo.getCoins(),
+                (coins, priceInfo) -> coins - priceInfo.getCoins(),
                 Joined.with(new JsonSerde.TraderSerde(), Serdes.Double(), new JsonSerde.SharePriceInfoSerde())
             )
             // Throttle to not get more than 1 investment by second
