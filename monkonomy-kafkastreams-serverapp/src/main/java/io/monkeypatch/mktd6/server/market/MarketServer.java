@@ -7,6 +7,7 @@ import io.monkeypatch.mktd6.model.market.ops.TxnResultType;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.model.trader.TraderState;
 import io.monkeypatch.mktd6.server.model.ServerStores;
+import io.monkeypatch.mktd6.server.model.ServerTopics;
 import io.monkeypatch.mktd6.server.model.TraderStateUpdater;
 import io.monkeypatch.mktd6.server.model.TxnEvent;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -68,6 +69,11 @@ public class MarketServer  implements TopologySupplier {
         txnEvents
             .mapValues(TxnEvent::getTxnResult)
             .to(TXN_RESULTS.getTopicName(), helper.produced(TXN_RESULTS));
+
+        txnEvents
+            .filter((trader, event) -> event.getTxnResult().getStatus() == TxnResultType.ACCEPTED)
+            .mapValues(event -> event.getTxnResult().getState())
+            .to(TRADER_STATES.getTopicName(), helper.produced(TRADER_STATES));
 
         return builder;
     }
