@@ -80,15 +80,15 @@ public class SimpleTrader implements TopologySupplier {
         builder
             .stream(TXN_RESULTS.getTopicName(), helper.consumed(TXN_RESULTS))
             .mapValues(v -> v.getState().getCoins())
-            // Keep the price for 3 shares
+            // Keep the price for 1 share
             .join(
-                myPrices,
-                (coins, priceInfo) -> coins - priceInfo.getCoins(),
+                myPrices, // We join with the price tables
+                (coins, priceInfo) -> coins - priceInfo.getCoins(), // We compute how much we can invest while keeping the price of 1 coins
                 Joined.with(new JsonSerde.TraderSerde(), Serdes.Double(), new JsonSerde.SharePriceInfoSerde())
             )
+            .filter((k, v) -> v > 0)
             // Throttle to not get more than 1 investment by second
             .transform(() -> new TraderInvestmentTransformer(trader), ServerStores.TRADER_INVESTMENT.getStoreName())
-            .filter((k, v) -> v > 0)
             .peek((k,v) -> LOG.info("Investing {}!!!", v))
             // Create the investment
             .mapValues(v -> Investment.make(txnId(), v))

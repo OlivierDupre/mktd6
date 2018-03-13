@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 /**
- * In this exercise we will explore joining of streams.
+ * In this exercise we will explore joining.
  *
  * <p>Joining can happen between streams, between tables or between streams
  * and tables. In all of these cases, there may be left joins, inner joins or
@@ -39,6 +39,19 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
  * <p>When joining two streams/tables, what we do is actually get values
  * corresponding to the same key, and applying a function to both values.
  * Values may be of different types.</p>
+ *
+ * <p>Joining happens in time windows: events too far apart from each other
+ * in the joined streams will not be joined. The time windowing is configurable.
+ * </p>
+ *
+ * <p>When joining a KStream with a KTable, however, the time windowing that
+ * was used to create the table is used, so there is no need to specify it
+ * in this particular case (idem when joining two tables).</p>
+ *
+ * <p>A rather lengthy but complete article about joining in Kafka Streams can be found
+ * <a href="https://blog.codecentric.de/en/2017/02/crossing-streams-joins-apache-kafka/">there</a>,
+ * with nice visual examples. Skimming over it can be rewarding.</p>
+ *
  */
 public class Chapter05_TablesAndJoining extends EmbeddedClusterBoilerplate {
 
@@ -72,10 +85,14 @@ public class Chapter05_TablesAndJoining extends EmbeddedClusterBoilerplate {
      * a player has already fed. We will join this stream with the table of states,
      * and apply the "fed monkey" update to the player's state.
      * </p>
+     *
+     * <p><b>Note:</b> what is done in this example could more easily achieved
+     * with a simple reduce. What is asked from you does not represent well
+     * the use case for joins, look at this example as a simple way to familiarize
+     * yourself with the API.</p>
      */
     @Override
     protected void buildStreamTopology(StreamsBuilder builder) {
-
 
         // >>> Your job starts here.
 
@@ -91,10 +108,8 @@ public class Chapter05_TablesAndJoining extends EmbeddedClusterBoilerplate {
 
     }
 
-
     //==========================================================================
     //==== TEST LOGIC
-
 
     @Before
     public void setUp() throws Exception {

@@ -13,10 +13,10 @@ public class TxnResult {
 
     @JsonCreator
     public TxnResult(
-            @JsonProperty("txnId") String txnId,
-            @JsonProperty("type") String type,
-            @JsonProperty("state") TraderState state,
-            @JsonProperty("status") TxnResultType status
+        @JsonProperty("txnId") String txnId,
+        @JsonProperty("type") String type,
+        @JsonProperty("state") TraderState state,
+        @JsonProperty("status") TxnResultType status
     ) {
         this.txnId = txnId;
         this.type = type;

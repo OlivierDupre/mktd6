@@ -24,6 +24,9 @@ import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,6 +35,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MonkonomyServer implements Runnable {
+
+    public static final String KAFKA_HOST = getLocalIp();
+    public static final String ZK_PORT = "2181";
+    public static final String KAFKA_PORT = "9092";
 
     private static final Logger LOG = LoggerFactory.getLogger(MonkonomyServer.class);
     public static final String ONE_KEY = "GNOU";
@@ -61,20 +68,13 @@ public class MonkonomyServer implements Runnable {
             buildTopology(),
             boilerplate.streamsConfig(false));
 
-        /*//
-        executor.scheduleAtFixedRate(
-            () -> LOG.info(kafkaStreams.toString()),
-            10,
-            10,
-            TimeUnit.SECONDS);
-        //*/
+        displayTopology(kafkaStreams);
 
         executor.execute(kafkaStreams::start);
     }
 
     private Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
-
         return getTopologyBuilders()
             .reduce(
                 builder,
@@ -98,15 +98,17 @@ public class MonkonomyServer implements Runnable {
         );
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        String zkHostPort = "172.16.238.2:2181";
+    public static void main(String[] args) throws Exception {
+        String zkHostPort = KAFKA_HOST + ":" + ZK_PORT;
         ZkClient zk = new ZkClient(zkHostPort);
         ZkUtils zkUtils = new ZkUtils(zk, new ZkConnection(zkHostPort), false);
 
-        String bootstrapServerConfig = "172.16.238.3:9092";
+        String bootstrapServer = KAFKA_HOST + ":" + KAFKA_PORT;
+
+        LOG.info("Connecting to kafka bootstrapServer: {}", bootstrapServer);
 
         Properties config = new Properties();
-        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServerConfig);
+        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
 
         AdminClient admin = AdminClient.create(config);
 
@@ -134,7 +136,7 @@ public class MonkonomyServer implements Runnable {
                 .collect(Collectors.toSet()));
 
         KafkaStreamsBoilerplate helper = new KafkaStreamsBoilerplate(
-                bootstrapServerConfig,
+                bootstrapServer,
                 "monkonomy-server");
 
         while(!allTopicsExist(zkUtils, topicDefs)) {
@@ -145,10 +147,40 @@ public class MonkonomyServer implements Runnable {
         new MonkonomyServer(helper).run();
     }
 
+    private static String getLocalIp() {
+        try {
+            Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+            for (; n.hasMoreElements(); ) {
+                NetworkInterface e = n.nextElement();
+                Enumeration<InetAddress> a = e.getInetAddresses();
+                for (; a.hasMoreElements(); ) {
+                    InetAddress addr = a.nextElement();
+                    String hostAddress = addr.getHostAddress();
+                    if (hostAddress.startsWith("192.")) {
+                        return hostAddress;
+                    }
+                }
+            }
+        }
+        catch(Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return "localhost";
+    }
+
     private static boolean allTopicsExist(ZkUtils zkUtils, List<TopicDef<?, ?>> topicDefs) {
         return topicDefs.stream()
             .map(TopicDef::getTopicName)
             .allMatch(t -> AdminUtils.topicExists(zkUtils, t));
+    }
+
+    private void displayTopology(KafkaStreams kafkaStreams) {
+        // Show the topology every 10 seconds
+        executor.scheduleAtFixedRate(
+                () -> LOG.info(kafkaStreams.toString()),
+                10,
+                10,
+                TimeUnit.SECONDS);
     }
 
 

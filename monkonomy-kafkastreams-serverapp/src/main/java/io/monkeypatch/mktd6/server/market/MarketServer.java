@@ -83,8 +83,4 @@ public class MarketServer  implements TopologySupplier {
         && v.getTxnResult().getType().equals(TraderStateUpdater.Type.INVEST.name());
     }
 
-    private TxnEvent getTxnEvent(TraderStateUpdater upd, TraderState state) {
-        return new TxnEvent(upd.update(state), Math.abs(upd.getCoinsDiff()));
-    }
-
 }
