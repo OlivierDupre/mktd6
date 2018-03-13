@@ -24,7 +24,7 @@ public class TraderInvestmentTransformer implements Transformer<Trader, Double, 
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
         this.context = context;
-        stateStore = (KeyValueStore) this.context.getStateStore(ServerStores.TRADER_INVESTMENT.getStoreName());
+        stateStore = (KeyValueStore) this.context.getStateStore(ServerStores.TRADER_INVESTMENT_STORE.getStoreName());
         this.context.schedule(
             1000,
             PunctuationType.WALL_CLOCK_TIME,

@@ -44,6 +44,7 @@ public class SharePriceServer implements TopologySupplier {
         TopicDef<String, SharePriceMult> priceMults = TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
         TopicDef<String, ShareHypePiece> shareHypeTopic = ServerTopics.SHARE_HYPE;
         String priceStoreName = ServerStores.PRICE_VALUE_STORE.getStoreName();
+        String burstStoreName = ServerStores.BURST_STEP_STORE.getStoreName();
 
         // Fetch the stream of (random) multipliers
         KStream<String, Double> sharePriceBase = builder
@@ -78,11 +79,12 @@ public class SharePriceServer implements TopologySupplier {
                 Materialized.with(Serdes.String(), Serdes.Double()));
 
         // Compute the hype taking bubble bursts into account, using state
+
         hypePriceInfluence
             .toStream()
             .transformValues(
-                () -> new SharePriceHypeInfluenceTransformer(priceStoreName),
-                priceStoreName)
+                SharePriceHypeInfluenceTransformer::new,
+                priceStoreName, burstStoreName)
             //.peek((k,v) -> LOG.info("HypePriceAdder: {}", v))
         ;
 

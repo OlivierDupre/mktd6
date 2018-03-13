@@ -87,10 +87,11 @@ public class MonkonomyServer implements Runnable {
 
     private Stream<TopologySupplier> getTopologyBuilders() {
         return Stream.of(
-            (helper, builder) -> ServerStores.PRICE_VALUE_STORE.addTo(builder),
-            (helper, builder) -> ServerStores.TXN_INVESTMENT_STORE.addTo(builder),
-            (helper, builder) -> ServerStores.STATE_STORE.addTo(builder),
-            (helper, builder) -> ServerStores.TRADER_INVESTMENT.addTo(builder),
+            (h, builder) -> ServerStores.PRICE_VALUE_STORE.addTo(builder),
+            (h, builder) -> ServerStores.TXN_INVESTMENT_STORE.addTo(builder),
+            (h, builder) -> ServerStores.STATE_STORE.addTo(builder),
+            (h, builder) -> ServerStores.TRADER_INVESTMENT_STORE.addTo(builder),
+            (h, builder) -> ServerStores.BURST_STEP_STORE.addTo(builder),
             new SharePriceServer(),
             new MarketServer(),
             new SimpleTrader("st0")

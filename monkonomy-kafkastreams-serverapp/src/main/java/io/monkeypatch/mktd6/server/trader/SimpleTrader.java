@@ -70,6 +70,8 @@ public class SimpleTrader implements TopologySupplier {
             })
             .to(MARKET_ORDERS.getTopicName(), helper.produced(MARKET_ORDERS));
 
+        // Get the table containing the latest share price,
+        // re-keyed with my trader instance (to allow joins)
         KTable<Trader, SharePriceInfo> myPrices = sharePrices
             .selectKey((k,v) -> trader)
             .groupByKey(Serialized.with(
@@ -86,12 +88,12 @@ public class SimpleTrader implements TopologySupplier {
             // Keep the price for 1 share
             .join(
                 myPrices, // We join with the price tables
-                (coins, priceInfo) -> coins - priceInfo.getCoins(), // We compute how much we can invest while keeping the price of 1 coins
+                (coins, priceInfo) -> coins - priceInfo.getCoins(), // We compute how much we can invest while keeping the price of 1 share
                 Joined.with(new JsonSerde.TraderSerde(), Serdes.Double(), new JsonSerde.SharePriceInfoSerde())
             )
             .filter((k, v) -> v > 0)
             // Throttle to not get more than 1 investment by second
-            .transform(() -> new TraderInvestmentTransformer(trader), ServerStores.TRADER_INVESTMENT.getStoreName())
+            .transform(() -> new TraderInvestmentTransformer(trader), ServerStores.TRADER_INVESTMENT_STORE.getStoreName())
             .peek((k,v) -> LOG.info("Investing {}!!!", v))
             // Create the investment
             .mapValues(v -> Investment.make(txnId(), v))
