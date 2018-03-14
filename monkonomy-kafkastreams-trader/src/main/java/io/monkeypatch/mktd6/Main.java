@@ -5,9 +5,10 @@ import io.monkeypatch.mktd6.model.Team;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.trader.TraderTopology;
 import io.monkeypatch.mktd6.trader.helper.TraderStores;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
+
+import java.util.Random;
 
 import static io.monkeypatch.mktd6.kstreams.LaunchHelper.getLocalIp;
 
@@ -28,8 +29,9 @@ public class Main {
 
     public static final String BOOTSTRAP_SERVER = KAFKA_HOST + ":" + KAFKA_PORT;
 
+    public static final String RANDOM = Integer.toString(new Random().nextInt(100000), 36);
     public static final String TRADER_APPLICATION_ID = String.format(
-        "monkonomy-trader-%s-%s", TRADER.getTeam(), TRADER.getName());
+        "monkonomy-trader-%s-%s-%s", TRADER.getTeam(), TRADER.getName(), RANDOM);
 
 
 
