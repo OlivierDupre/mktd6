@@ -13,14 +13,16 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <monkonomy.version>${project.version}</monkonomy.version>
         <kafka.version>1.0.1</kafka.version>
     </properties>
 
     <modules>
         <module>monkonomy-model</module>
-        <module>monkonomy-kstreams-helper</module>
-        <module>monkonomy-kafkastreams-morning</module>
+        <module>monkonomy-kafkastreams-helper</module>
+        <module>monkonomy-kafkastreams-katas</module>
         <module>monkonomy-kafkastreams-serverapp</module>
+        <module>monkonomy-kafkastreams-trader</module>
     </modules>
 
     <build>
@@ -55,5 +57,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.monkeypatch</groupId>
+                <artifactId>monkonomy-model</artifactId>
+                <version>${monkonomy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.monkeypatch</groupId>
+                <artifactId>monkonomy-kafkastreams-helper</artifactId>
+                <version>${monkonomy.version}</version>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
 
 </project>

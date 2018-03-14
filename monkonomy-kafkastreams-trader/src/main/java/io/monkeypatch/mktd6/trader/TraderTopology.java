@@ -1,9 +1,8 @@
-package io.monkeypatch.mktd6.server.trader;
+package io.monkeypatch.mktd6.trader;
 
 import com.google.common.collect.Lists;
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
-import io.monkeypatch.mktd6.model.Team;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
 import io.monkeypatch.mktd6.model.market.ops.TxnResultType;
 import io.monkeypatch.mktd6.model.trader.Trader;
@@ -11,11 +10,14 @@ import io.monkeypatch.mktd6.model.trader.ops.Investment;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrder;
 import io.monkeypatch.mktd6.model.trader.ops.MarketOrderType;
 import io.monkeypatch.mktd6.serde.JsonSerde;
-import io.monkeypatch.mktd6.server.model.ServerStores;
+import io.monkeypatch.mktd6.trader.helper.TraderStores;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Joined;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Serialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,18 +28,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static io.monkeypatch.mktd6.topic.TopicDef.*;
 
 @SuppressWarnings("unchecked")
-public class SimpleTrader implements TopologySupplier {
+public class TraderTopology implements TopologySupplier {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleTrader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TraderTopology.class);
 
     private final String playerName;
     public final Trader trader;
 
     private final AtomicInteger txn = new AtomicInteger();
 
-    public SimpleTrader(String playerName) {
-        this.playerName = playerName;
-        this.trader = new Trader(Team.ALOUATE, playerName);
+    public TraderTopology(Trader trader) {
+        this.playerName = trader.getName();
+        this.trader = trader;
     }
 
     private String txnId() {
@@ -72,7 +74,7 @@ public class SimpleTrader implements TopologySupplier {
 
         // Get the table containing the latest share price,
         // re-keyed with my trader instance (to allow joins)
-        KTable<Trader, SharePriceInfo> myPrices = sharePrices
+        KTable<io.monkeypatch.mktd6.model.trader.Trader, SharePriceInfo> myPrices = sharePrices
             .selectKey((k,v) -> trader)
             .groupByKey(Serialized.with(
                 new JsonSerde.TraderSerde(),
@@ -93,7 +95,7 @@ public class SimpleTrader implements TopologySupplier {
             )
             .filter((k, v) -> v > 0)
             // Throttle to not get more than 1 investment by second
-            .transform(() -> new TraderInvestmentTransformer(trader), ServerStores.TRADER_INVESTMENT_STORE.getStoreName())
+            .transform(() -> new TraderInvestmentTransformer(trader), TraderStores.TRADER_INVESTMENT_STORE.getStoreName())
             .peek((k,v) -> LOG.info("Investing {}!!!", v))
             // Create the investment
             .mapValues(v -> Investment.make(txnId(), v))
@@ -104,7 +106,7 @@ public class SimpleTrader implements TopologySupplier {
         return builder;
     }
 
-    private Iterable<KeyValue<Trader,Double>> last(Trader key, List<Double> ds) {
+    private Iterable<KeyValue<io.monkeypatch.mktd6.model.trader.Trader,Double>> last(io.monkeypatch.mktd6.model.trader.Trader key, List<Double> ds) {
         return ds.stream().reduce((a,b) -> b)
             .map(d -> Lists.newArrayList(KeyValue.pair(trader, d)))
             .orElseGet(Lists::newArrayList);

@@ -8,9 +8,7 @@ import io.monkeypatch.mktd6.server.model.ServerStores;
 import io.monkeypatch.mktd6.server.model.ServerTopics;
 import io.monkeypatch.mktd6.server.priceinfo.SharePriceMultMeter;
 import io.monkeypatch.mktd6.server.priceinfo.SharePriceServer;
-import io.monkeypatch.mktd6.server.trader.SimpleTrader;
 import io.monkeypatch.mktd6.topic.TopicDef;
-import kafka.admin.AdminUtils;
 import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
@@ -24,14 +22,15 @@ import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static io.monkeypatch.mktd6.kstreams.LaunchHelper.allTopicsExist;
+import static io.monkeypatch.mktd6.kstreams.LaunchHelper.getLocalIp;
 
 public class MonkonomyServer implements Runnable {
 
@@ -93,8 +92,7 @@ public class MonkonomyServer implements Runnable {
             (h, builder) -> ServerStores.TRADER_INVESTMENT_STORE.addTo(builder),
             (h, builder) -> ServerStores.BURST_STEP_STORE.addTo(builder),
             new SharePriceServer(),
-            new MarketServer(),
-            new SimpleTrader("st0")
+            new MarketServer()
         );
     }
 
@@ -145,33 +143,6 @@ public class MonkonomyServer implements Runnable {
         }
 
         new MonkonomyServer(helper).run();
-    }
-
-    private static String getLocalIp() {
-        try {
-            Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
-            for (; n.hasMoreElements(); ) {
-                NetworkInterface e = n.nextElement();
-                Enumeration<InetAddress> a = e.getInetAddresses();
-                for (; a.hasMoreElements(); ) {
-                    InetAddress addr = a.nextElement();
-                    String hostAddress = addr.getHostAddress();
-                    if (hostAddress.startsWith("192.")) {
-                        return hostAddress;
-                    }
-                }
-            }
-        }
-        catch(Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-        return "localhost";
-    }
-
-    private static boolean allTopicsExist(ZkUtils zkUtils, List<TopicDef<?, ?>> topicDefs) {
-        return topicDefs.stream()
-            .map(TopicDef::getTopicName)
-            .allMatch(t -> AdminUtils.topicExists(zkUtils, t));
     }
 
     private void displayTopology(KafkaStreams kafkaStreams) {

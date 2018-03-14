@@ -5,6 +5,9 @@ public enum Team {
     ALOUATE,
     BONOBO,
     CAPUCIN,
-    DRILL;
+    DRILL,
+
+    // Team to be used when testing/tinkering
+    SAGOUIN;
 
 }

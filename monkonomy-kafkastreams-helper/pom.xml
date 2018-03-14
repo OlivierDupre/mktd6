@@ -9,22 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>monkonomy-kafkastreams-serverapp</artifactId>
+    <artifactId>monkonomy-kafkastreams-helper</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.monkeypatch</groupId>
-            <artifactId>monkonomy-kafkastreams-helper</artifactId>
+            <artifactId>monkonomy-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.twitter</groupId>
-            <artifactId>hbc-twitter4j</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-            <version>3.6.1</version>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -32,4 +27,5 @@
             <version>RELEASE</version>
         </dependency>
     </dependencies>
+
 </project>

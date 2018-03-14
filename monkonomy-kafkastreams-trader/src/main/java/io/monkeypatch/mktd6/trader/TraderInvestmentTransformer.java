@@ -1,7 +1,7 @@
-package io.monkeypatch.mktd6.server.trader;
+package io.monkeypatch.mktd6.trader;
 
 import io.monkeypatch.mktd6.model.trader.Trader;
-import io.monkeypatch.mktd6.server.model.ServerStores;
+import io.monkeypatch.mktd6.trader.helper.TraderStores;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -24,7 +24,7 @@ public class TraderInvestmentTransformer implements Transformer<Trader, Double, 
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
         this.context = context;
-        stateStore = (KeyValueStore) this.context.getStateStore(ServerStores.TRADER_INVESTMENT_STORE.getStoreName());
+        stateStore = (KeyValueStore) this.context.getStateStore(TraderStores.TRADER_INVESTMENT_STORE.getStoreName());
         this.context.schedule(
             1000,
             PunctuationType.WALL_CLOCK_TIME,
@@ -47,7 +47,5 @@ public class TraderInvestmentTransformer implements Transformer<Trader, Double, 
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 }

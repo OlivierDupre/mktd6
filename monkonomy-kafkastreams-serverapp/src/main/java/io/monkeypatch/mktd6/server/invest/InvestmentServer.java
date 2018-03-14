@@ -54,7 +54,7 @@ public class InvestmentServer implements Runnable {
         double logNormalBiasReturn = Math.exp(-1 - (totalInvestments / 1000d));
         LogNormalDistribution logNormal = new LogNormalDistribution(0.035 + logNormalBiasReturn, 0.01);
         double investmentReturn = logNormal.sample();
-        
+
         executor.schedule(() -> {
             TraderStateUpdater updater = new TraderStateUpdater(
                 result.getTxnId(),
