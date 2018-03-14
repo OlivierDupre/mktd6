@@ -1,0 +1,34 @@
+CREATE STREAM prices (
+    coins DOUBLE,
+    time LONG
+) WITH (
+    VALUE_FORMAT = 'JSON',
+    KAFKA_TOPIC = 'share-price',
+    TIMESTAMP='time'
+);
+
+
+SELECT coins
+FROM prices;
+
+
+CREATE TABLE lastPrice
+WITH (
+    VALUE_FORMAT='JSON'
+) AS
+SELECT coins
+FROM prices
+GROUP BY rowkey;
+
+
+SELECT coins
+FROM lastPrice;
+
+
+CREATE STREAM investment_orders (    invested DOUBLE,    team STRING,    user STRING,    txnId STRING) WITH (    VALUE_FORMAT='JSON',    KAFKA_TOPIC='investment-orders');
+
+
+CREATE STREAM investments WITH (VALUE_FORMAT='JSON') AS SELECT   invested AS coins,    EXTRACTJSONFIELD(rowkey, '$.team') AS team,    txnId,    'GNOU' AS key FROM investment_orders;
+
+
+SELECT i.txnId, i.coins FROM investments i LEFT JOIN lastPrice p ON i.key = p.rowkey WINDOW SESSION (60 SECONDS) WHERE i.coins > 3 * p.coins;

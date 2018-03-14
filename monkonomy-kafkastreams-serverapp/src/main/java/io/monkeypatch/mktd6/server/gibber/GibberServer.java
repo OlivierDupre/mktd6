@@ -53,10 +53,11 @@ public class GibberServer {
                 //LOG.info("Adding gibb: {}", status.getText());
                 String id = Long.toHexString(status.getId());
                 DateTime time = DateTime.now(DateTimeZone.UTC);
+                Gibb gibb = new Gibb(id, time, status.getText());
                 producer.send(new ProducerRecord<>(
                     TopicDef.GIBBS.getTopicName(),
                     MonkonomyServer.ONE_KEY,
-                    new Gibb(id, time, status.getText())));
+                    gibb));
             }
         });
 

@@ -61,4 +61,13 @@ public class Gibb {
                 .append(text)
                 .toHashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Gibb{" +
+                "id='" + id + '\'' +
+                ", time=" + time +
+                ", text='" + text.replaceAll("(\\s|\n)+", " ") + '\'' +
+                '}';
+    }
 }

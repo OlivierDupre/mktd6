@@ -15,6 +15,7 @@
     <logger name="org.apache.kafka.streams.processor.internals" level="WARN" />
     <logger name="org.apache.zookeeper" level="WARN" />
     <logger name="org.I0Itec.zkclient" level="WARN" />
+    <logger name="twitter4j" level="WARN" />
 
     <root level="DEBUG">
         <appender-ref ref="CONSOLE" />

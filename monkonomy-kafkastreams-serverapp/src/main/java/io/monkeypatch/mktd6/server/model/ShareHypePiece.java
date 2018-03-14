@@ -22,15 +22,16 @@ public class ShareHypePiece {
 
     private static final List<String> POSITIVE = Arrays.asList(
         "yes", "happy", "good", "great", "better", "best", "up",
-        "safe", "sane",
+        "safe", "sane", "sweet",
         "buy", "like", "love", "high", "nice",
         "certain", "sure", "solid",
-        "mktd"
+        "mktd",
+        "thank", "thanks", "merci", "super"
     );
 
     private static final List<String> NEGATIVE = Arrays.asList(
         "no", "sad", "bad", "worse", "worst", "down",
-        "dangerous", "danger", "insane",
+        "dangerous", "danger", "insane", "sour",
         "sell", "dislike", "hate", "low",
         "bubble", "burst", "risk"
     );
