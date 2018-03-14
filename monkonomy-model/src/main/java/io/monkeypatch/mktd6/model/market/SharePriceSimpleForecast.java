@@ -2,6 +2,8 @@ package io.monkeypatch.mktd6.model.market;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * A simple forecast is created by the market supervisor like this:
@@ -34,5 +36,22 @@ public class SharePriceSimpleForecast {
     @JsonValue
     public double getMult() {
         return mult;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SharePriceSimpleForecast that = (SharePriceSimpleForecast) o;
+        return new EqualsBuilder()
+                .append(mult, that.mult)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(mult)
+                .toHashCode();
     }
 }

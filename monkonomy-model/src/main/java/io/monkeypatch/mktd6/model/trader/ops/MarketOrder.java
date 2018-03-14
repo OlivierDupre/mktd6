@@ -2,6 +2,8 @@ package io.monkeypatch.mktd6.model.trader.ops;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -35,4 +37,22 @@ public class MarketOrder extends TraderOp {
         return shares;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MarketOrder that = (MarketOrder) o;
+        return new EqualsBuilder()
+                .append(shares, that.shares)
+                .append(type, that.type)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(type)
+                .append(shares)
+                .toHashCode();
+    }
 }

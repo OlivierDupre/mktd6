@@ -4,6 +4,8 @@ import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.model.Team;
 import io.monkeypatch.mktd6.model.trader.Trader;
 import io.monkeypatch.mktd6.trader.TraderTopology;
+import io.monkeypatch.mktd6.trader.helper.TraderStores;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 
@@ -35,11 +37,15 @@ public class Main {
         KafkaStreamsBoilerplate helper = new KafkaStreamsBoilerplate(
             BOOTSTRAP_SERVER, TRADER_APPLICATION_ID);
 
+        StreamsBuilder builder = new StreamsBuilder();
+
+        TraderStores.TRADER_INVESTMENT_STORE.addTo(builder);
+
         KafkaStreams kafkaStreams = new KafkaStreams(
             new TraderTopology(TRADER)
-                .apply(helper, new StreamsBuilder())
+                .apply(helper, builder)
                 .build(),
-            helper.streamsConfig(false));
+            helper.streamsConfig(false, "latest"));
 
         kafkaStreams.start();
     }

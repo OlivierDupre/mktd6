@@ -1,6 +1,5 @@
 package io.monkeypatch.mktd6.trader;
 
-import com.google.common.collect.Lists;
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
 import io.monkeypatch.mktd6.model.market.SharePriceInfo;
@@ -21,8 +20,6 @@ import org.apache.kafka.streams.kstream.Serialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.monkeypatch.mktd6.topic.TopicDef.*;
@@ -81,9 +78,13 @@ public class TraderTopology implements TopologySupplier {
                 new JsonSerde.SharePriceInfoSerde()))
             .reduce((a, b) -> b);
 
+
+
         // Invest all your money whenever you have some.
         builder
             .stream(TXN_RESULTS.getTopicName(), helper.consumed(TXN_RESULTS))
+            .filter((k,v) -> trader.equals(k))
+            .peek((k,v) -> LOG.info("Transaction result: {}", v.toString()))
             // Ignore rejected transactions
             .filter((k,v) -> v.getStatus() == TxnResultType.ACCEPTED)
             .mapValues(v -> v.getState().getCoins())
@@ -104,17 +105,5 @@ public class TraderTopology implements TopologySupplier {
         // Never feed monkeys... (bad!)
 
         return builder;
-    }
-
-    private Iterable<KeyValue<io.monkeypatch.mktd6.model.trader.Trader,Double>> last(io.monkeypatch.mktd6.model.trader.Trader key, List<Double> ds) {
-        return ds.stream().reduce((a,b) -> b)
-            .map(d -> Lists.newArrayList(KeyValue.pair(trader, d)))
-            .orElseGet(Lists::newArrayList);
-    }
-
-    private ArrayList<Double> accList(Double v, ArrayList<Double> list) {
-        ArrayList<Double> result = new ArrayList<>(list);
-        result.add(v);
-        return result;
     }
 }

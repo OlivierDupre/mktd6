@@ -1,7 +1,5 @@
 package io.monkeypatch.mktd6.kstreams;
 
-import io.monkeypatch.mktd6.model.trader.Trader;
-import io.monkeypatch.mktd6.model.trader.TraderState;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
@@ -70,22 +69,30 @@ public class KafkaStreamsBoilerplate {
         return producerConfig(topic, exactlyOnce, Collections.emptyMap());
     }
 
-    public Properties streamsConfigProps(boolean exactlyOnce) {
+    public Properties streamsConfigProps(boolean exactlyOnce, String offset) {
         Properties streamsConfiguration = new Properties();
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         streamsConfiguration.put(StreamsConfig.METADATA_MAX_AGE_CONFIG, "1000");
         streamsConfiguration.put(StreamsConfig.STATE_DIR_CONFIG, tempDirectory().getPath());
         streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
-        streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, offset);
         if (exactlyOnce) {
             streamsConfiguration.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
         }
         return streamsConfiguration;
     }
 
+    public Properties streamsConfigProps(boolean exactlyOnce) {
+        return streamsConfigProps(exactlyOnce, "earliest");
+    }
+
     protected <K, V> Properties streamsConfigProps(TopicDef<K, V> topicDef, boolean exactlyOnce) {
-        Properties properties = streamsConfigProps(exactlyOnce);
+        return streamsConfigProps(topicDef, exactlyOnce, "earliest");
+    }
+
+    protected <K, V> Properties streamsConfigProps(TopicDef<K, V> topicDef, boolean exactlyOnce, String offset) {
+        Properties properties = streamsConfigProps(exactlyOnce, offset);
         properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, topicDef.getKeySerde().getClass().getName());
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, topicDef.getValueSerde().getClass().getName());
         return properties;
@@ -93,6 +100,10 @@ public class KafkaStreamsBoilerplate {
 
     public StreamsConfig streamsConfig(boolean exactlyOnce) {
         return new StreamsConfig(streamsConfigProps(exactlyOnce));
+    }
+
+    public <K,V> StreamsConfig streamsConfig(boolean exactlyOnce, String offset) {
+        return new StreamsConfig(streamsConfigProps(exactlyOnce, offset));
     }
 
     public <K,V> StreamsConfig streamsConfig(TopicDef<K,V> topicDef, boolean exactlyOnce) {
@@ -113,7 +124,8 @@ public class KafkaStreamsBoilerplate {
         String prefix = "kafka-";
         final File file;
         try {
-            file = Files.createTempDirectory(Paths.get("/tmp"), prefix).toFile();
+            Path dir = Paths.get(System.getProperty("java.io.tmpdir"));
+            file = Files.createTempDirectory(dir, prefix).toFile();
         } catch (IOException var4) {
             throw new RuntimeException("Failed to create a temp dir", var4);
         }
