@@ -2,6 +2,7 @@ package io.monkeypatch.mktd6.server;
 
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.kstreams.TopologySupplier;
+import io.monkeypatch.mktd6.server.gibber.GibberServer;
 import io.monkeypatch.mktd6.server.invest.InvestmentServer;
 import io.monkeypatch.mktd6.server.market.MarketServer;
 import io.monkeypatch.mktd6.server.model.ServerStores;

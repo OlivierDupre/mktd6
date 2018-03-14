@@ -1,7 +1,8 @@
-package io.monkeypatch.mktd6.server;
+package io.monkeypatch.mktd6.server.gibber;
 
 import io.monkeypatch.mktd6.kstreams.KafkaStreamsBoilerplate;
 import io.monkeypatch.mktd6.model.gibber.Gibb;
+import io.monkeypatch.mktd6.server.MonkonomyServer;
 import io.monkeypatch.mktd6.topic.TopicDef;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,6 +15,8 @@ import twitter4j.auth.AccessToken;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static io.monkeypatch.mktd6.kstreams.LaunchHelper.getLocalIp;
 
 /**
  * This class reads data from Twitter and feeds the gibber topic
@@ -54,11 +57,6 @@ public class GibberServer {
                     TopicDef.GIBBS.getTopicName(),
                     MonkonomyServer.ONE_KEY,
                     new Gibb(id, time, status.getText())));
-                producer.send(new ProducerRecord<>(
-                        TopicDef.GIBBS.getTopicName(),
-                        MonkonomyServer.ONE_KEY,
-                        new Gibb(id + "xxx", time.plus(1L), "very good banana down my throat, i'm happy and love up up up")));
-
             }
         });
 
@@ -82,11 +80,11 @@ public class GibberServer {
     public static void main(String[] args) {
         new GibberServer(
             new KafkaStreamsBoilerplate(
-                "172.16.238.3:9092",
+                getLocalIp() + ":9092",
                 "gibber-server")
         )
         .run(Arrays.asList(
-            "kafka",
-            "banana"));
+            "banana",
+            "mktd"));
     }
 }

@@ -20,6 +20,7 @@ import org.apache.kafka.streams.kstream.Serialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.monkeypatch.mktd6.topic.TopicDef.*;
@@ -40,7 +41,7 @@ public class TraderTopology implements TopologySupplier {
     }
 
     private String txnId() {
-        return playerName + "_" + txn.incrementAndGet();
+        return playerName + "_" + Integer.toString(Math.abs(UUID.randomUUID().hashCode()), 36);
     }
 
     @Override

@@ -15,6 +15,10 @@ import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.monkeypatch.mktd6.server.model.ServerTopics.SHARE_HYPE;
+import static io.monkeypatch.mktd6.topic.TopicDef.GIBBS;
+import static io.monkeypatch.mktd6.topic.TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
+
 /**
  * This class generates the data in the share price topic.
  *
@@ -40,15 +44,12 @@ public class SharePriceServer implements TopologySupplier {
         KafkaStreamsBoilerplate helper,
         StreamsBuilder builder
     ) {
-        TopicDef<String, Gibb> gibbs = TopicDef.GIBBS;
-        TopicDef<String, SharePriceMult> priceMults = TopicDef.SHARE_PRICE_OUTSIDE_EVOLUTION_METER;
-        TopicDef<String, ShareHypePiece> shareHypeTopic = ServerTopics.SHARE_HYPE;
         String priceStoreName = ServerStores.PRICE_VALUE_STORE.getStoreName();
         String burstStoreName = ServerStores.BURST_STEP_STORE.getStoreName();
 
         // Fetch the stream of (random) multipliers
         KStream<String, Double> sharePriceBase = builder
-            .stream(priceMults.getTopicName(), helper.consumed(priceMults))
+            .stream(SHARE_PRICE_OUTSIDE_EVOLUTION_METER.getTopicName(), helper.consumed(SHARE_PRICE_OUTSIDE_EVOLUTION_METER))
             .mapValues(SharePriceMult::getMult)
             .groupByKey(Serialized.with(Serdes.String(), Serdes.Double()))
             .aggregate(
@@ -61,13 +62,13 @@ public class SharePriceServer implements TopologySupplier {
 
         // Compute the hype
         KStream<String, ShareHypePiece> hypePieces = builder
-            .stream(gibbs.getTopicName(), helper.consumed(gibbs))
+            .stream(GIBBS.getTopicName(), helper.consumed(GIBBS))
             .filter((k, v) -> selectGibb(v))
             .flatMapValues(ShareHypePiece::hypePieces)
             //.peek((k,v) -> LOG.info("HypePiece: {}", v.getWord()))
         ;
         hypePieces
-            .to(shareHypeTopic.getTopicName(), helper.produced(shareHypeTopic));
+            .to(SHARE_HYPE.getTopicName(), helper.produced(SHARE_HYPE));
 
         // Compute the total hype influence
         KTable<String, Double> hypePriceInfluence = hypePieces

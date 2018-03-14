@@ -21,13 +21,18 @@ public class ShareHypePiece {
     private static final Logger LOG = LoggerFactory.getLogger(ShareHypePiece.class);
 
     private static final List<String> POSITIVE = Arrays.asList(
-        "yes", "happy", "good", "best", "up", "safe",
-        "buy", "like", "love", "high", "nice", "certain", "sure", "solid"
+        "yes", "happy", "good", "great", "better", "best", "up",
+        "safe", "sane",
+        "buy", "like", "love", "high", "nice",
+        "certain", "sure", "solid",
+        "mktd"
     );
 
     private static final List<String> NEGATIVE = Arrays.asList(
-        "no", "sad", "bad", "worst", "down", "dangerous", "danger",
-        "sell", "dislike", "hate", "low", "bubble", "burst", "risk"
+        "no", "sad", "bad", "worse", "worst", "down",
+        "dangerous", "danger", "insane",
+        "sell", "dislike", "hate", "low",
+        "bubble", "burst", "risk"
     );
 
     private final DateTime time;
@@ -59,7 +64,8 @@ public class ShareHypePiece {
     }
 
     public int getInfluence() {
-        return isPositive() ? +1 : -1;
+        return word.equals("mktd") ? 100 :
+            isPositive() ? +1 : -1;
     }
 
     public static List<ShareHypePiece> hypePieces(Gibb gibb) {

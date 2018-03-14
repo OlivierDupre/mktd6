@@ -1,5 +1,5 @@
 *.iml
 .idea/
-.mvn/
+.mvn/m2/
 target/
 logs/
