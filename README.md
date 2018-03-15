@@ -20,6 +20,15 @@ They take the form of unit test that you have to complete.
 
 Do them in order (starting at Chapter0...), read the comments.
 
+## Monkonomy game
+
+A simple trader is given at `monkonomy-kafkastreams-trader/src/main/java/mktd6/trader/TraderTopology.java`.
+
+This simple trader never feeds monkeys, so you have to change its behavior.
+
+Once you are ready, you can set the kafka broker ID in the `Main` class
+with the one given at the event, and start competing with other teams. 
+
 ## General setup
 
 ### Maven settings
@@ -53,6 +62,9 @@ $ ./run-kafka.sh
 ```
 
 This will launch the `docker-compose.yml`, providing your local network IP.
+
+You can then navigate to `locahost:8000` where kafka-topics-ui should display
+your local kafka broker topics and topic records.
 
 Then build and run the monkonomy server:
 

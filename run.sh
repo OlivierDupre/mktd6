@@ -16,7 +16,7 @@ trader)
         -Dexec.mainClass=mktd6.Main
 ;;
 *)
-  echo 'run [server]'
+  echo 'run [server | trader]'
 ;;
 esac
 
