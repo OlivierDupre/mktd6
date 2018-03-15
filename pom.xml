@@ -71,7 +71,6 @@
                 <version>${monkonomy.version}</version>
             </dependency>
         </dependencies>
-
     </dependencyManagement>
 
 </project>

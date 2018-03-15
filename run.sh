@@ -6,14 +6,14 @@ server)
         -Dmaven.repo.local=.mvn/m2/repository \
         -pl monkonomy-kafkastreams-serverapp \
         exec:java \
-        -Dexec.mainClass=io.monkeypatch.mktd6.server.MonkonomyServer
+        -Dexec.mainClass=mktd6.server.MonkonomyServer
 ;;
 trader)
     ./mvnw \
         -Dmaven.repo.local=.mvn/m2/repository \
         -pl monkonomy-kafkastreams-trader \
         exec:java \
-        -Dexec.mainClass=io.monkeypatch.mktd6.Main
+        -Dexec.mainClass=mktd6.Main
 ;;
 *)
   echo 'run [server]'
