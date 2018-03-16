@@ -67,4 +67,13 @@ public class SharePriceInfo {
                 .append(forecast)
                 .toHashCode();
     }
+
+    @Override
+    public String toString() {
+        return "SharePriceInfo{" +
+                "time=" + time +
+                ", coins=" + coins +
+                ", forecast=" + forecast +
+                '}';
+    }
 }

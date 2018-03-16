@@ -54,7 +54,9 @@ public class TraderTopology implements TopologySupplier {
         // Don't even care about looking at our assets, let the
         // market accept/reject the transaction.
         KStream<String, SharePriceInfo> sharePrices = builder
-                .stream(SHARE_PRICE.getTopicName(), helper.consumed(SHARE_PRICE));
+                .stream(SHARE_PRICE.getTopicName(), helper.consumed(SHARE_PRICE))
+                .peek((k,v) -> LOG.info("Share prices: {}", v.toString()));
+
         sharePrices
             .map((k, info) -> {
                 MarketOrderType type = info.getForecast().getMult() > 1
@@ -68,30 +70,15 @@ public class TraderTopology implements TopologySupplier {
             })
             .to(MARKET_ORDERS.getTopicName(), helper.produced(MARKET_ORDERS));
 
-        // Get the table containing the latest share price,
-        // re-keyed with my trader instance (to allow joins)
-        KTable<Trader, SharePriceInfo> myPrices = sharePrices
-            .selectKey((k,v) -> trader)
-            .groupByKey(Serialized.with(
-                new JsonSerde.TraderSerde(),
-                new JsonSerde.SharePriceInfoSerde()))
-            .reduce((a, b) -> b);
-
         // Invest all your money whenever you have some.
         builder
             .stream(TXN_RESULTS.getTopicName(), helper.consumed(TXN_RESULTS))
             .filter((k,v) -> trader.equals(k))
             .peek((k,v) -> LOG.info("Transaction result: {}", v.toString()))
-            // Ignore rejected transactions
-            .filter((k,v) -> v.getStatus() == TxnResultType.ACCEPTED)
-            .mapValues(v -> v.getState().getCoins())
-            // Keep the price for 1 share
-            .join(
-                myPrices, // We join with the price tables
-                (coins, priceInfo) -> coins - priceInfo.getCoins(), // We compute how much we can invest while keeping the price of 1 share
-                Joined.with(new JsonSerde.TraderSerde(), Serdes.Double(), new JsonSerde.SharePriceInfoSerde())
-            )
-            .filter((k, v) -> v > 0)
+            // Do not invest all my money...
+            .mapValues(v -> v.getState().getCoins() - 1)
+            .filter((k,v) -> v > 0)
+            .peek((k,v) -> LOG.info("State coins: {}", v.toString()))
             // Throttle to not get more than 1 investment by second
             .transform(() -> new TraderInvestmentTransformer(trader), TraderStores.TRADER_INVESTMENT_STORE.getStoreName())
             .peek((k,v) -> LOG.info("Investing {}!!!", v))

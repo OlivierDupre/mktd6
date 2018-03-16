@@ -54,4 +54,11 @@ public class SharePriceSimpleForecast {
                 .append(mult)
                 .toHashCode();
     }
+
+    @Override
+    public String toString() {
+        return "SharePriceSimpleForecast{" +
+                "mult=" + mult +
+                '}';
+    }
 }
