@@ -69,6 +69,10 @@ public class TraderState {
         return inFlightInvestments;
     }
 
+    public int score() {
+        return fedMonkeys - 20 * bailouts;
+    }
+
     public TxnResultType validate() {
         return
             (coins < 0) ? TxnResultType.INSUFFICIENT_COINS :

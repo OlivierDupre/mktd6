@@ -73,14 +73,14 @@ public class Chapter03_GroupingAndAggregating extends EmbeddedClusterBoilerplate
     public static final TopicDef<String, Investment> INVESTMENTS = new TopicDef<>(
         "investments",
         new JsonSerde.StringSerde(),
-        new JsonSerde.InvestmentSerde()
-    );
+        new JsonSerde.InvestmentSerde(),
+        1);
 
     public static final TopicDef<String, Investment> GROUPED_INVESTMENTS = new TopicDef<>(
             "grouped-investments",
             new JsonSerde.StringSerde(),
-            new JsonSerde.InvestmentSerde()
-    );
+            new JsonSerde.InvestmentSerde(),
+            1);
     public static final int TIME_WINDOW_MILLIS = 100;
 
     //==========================================================================

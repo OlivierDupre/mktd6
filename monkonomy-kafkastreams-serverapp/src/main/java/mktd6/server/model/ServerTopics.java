@@ -11,22 +11,22 @@ public class ServerTopics {
         new TopicDef<>(
             "share-hype",
             new JsonSerde.StringSerde(),
-            new ShareHypePiece.Serde());
+            new ShareHypePiece.Serde(), 1);
 
     public static final TopicDef<Trader, TraderStateUpdater> TRADER_UPDATES =
         new TopicDef<>(
             "trader-state-updates",
             new JsonSerde.TraderSerde(),
-            new TraderStateUpdater.Serde());
+            new TraderStateUpdater.Serde(), 8);
 
     public static final TopicDef<Trader, TraderState> TRADER_STATES = new TopicDef<>(
             "trader-states",
             new JsonSerde.TraderSerde(),
-            new JsonSerde.TraderStateSerde());
+            new JsonSerde.TraderStateSerde(), 8);
 
     public static final TopicDef<Trader, TxnEvent> INVESTMENT_TXN_EVENTS = new TopicDef<>(
             "investment-txn-events",
             new JsonSerde.TraderSerde(),
-            new TxnEvent.Serde());
+            new TxnEvent.Serde(), 8);
 
 }

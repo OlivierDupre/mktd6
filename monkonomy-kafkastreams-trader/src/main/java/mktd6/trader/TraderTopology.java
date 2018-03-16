@@ -9,14 +9,12 @@ import mktd6.model.trader.ops.Investment;
 import mktd6.model.trader.ops.MarketOrder;
 import mktd6.model.trader.ops.MarketOrderType;
 import mktd6.serde.JsonSerde;
+import mktd6.topic.TopicDef;
 import mktd6.trader.helper.TraderStores;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Joined;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Serialized;
+import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +77,6 @@ public class TraderTopology implements TopologySupplier {
                 new JsonSerde.SharePriceInfoSerde()))
             .reduce((a, b) -> b);
 
-
-
         // Invest all your money whenever you have some.
         builder
             .stream(TXN_RESULTS.getTopicName(), helper.consumed(TXN_RESULTS))
@@ -103,8 +99,22 @@ public class TraderTopology implements TopologySupplier {
             .mapValues(v -> Investment.make(txnId(), v))
             .to(INVESTMENT_ORDERS.getTopicName(), helper.produced(INVESTMENT_ORDERS));
 
-        // Never feed monkeys... (bad!)
+        // Bootstrap the trader states by feeding a monkey
+        bootstrapTraderState(helper, sharePrices);
+
+        // Never feed monkeys again... (bad!)
 
         return builder;
     }
+
+    private void bootstrapTraderState(
+        KafkaStreamsBoilerplate helper,
+        KStream<String, SharePriceInfo> sharePrices
+    ) {
+        sharePrices
+            .transform(() -> new TraderBootstrapTransformer(trader))
+            .to(TopicDef.FEED_MONKEYS.getTopicName(), helper.produced(TopicDef.FEED_MONKEYS));
+    }
+
+
 }

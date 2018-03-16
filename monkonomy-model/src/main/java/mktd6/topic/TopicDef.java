@@ -20,53 +20,63 @@ public class TopicDef<K, V> {
     public static final TopicDef<Trader, MarketOrder> MARKET_ORDERS = new TopicDef<>(
             "market-orders",
             new JsonSerde.TraderSerde(),
-            new JsonSerde.MarketOrderSerde());
+            new JsonSerde.MarketOrderSerde(), 8);
 
     public static final TopicDef<Trader, Investment> INVESTMENT_ORDERS = new TopicDef<>(
             "investment-orders",
             new JsonSerde.TraderSerde(),
-            new JsonSerde.InvestmentSerde());
+            new JsonSerde.InvestmentSerde(), 8);
 
     public static final TopicDef<Trader, FeedMonkeys> FEED_MONKEYS = new TopicDef<>(
             "feed-monkeys",
             new JsonSerde.TraderSerde(),
-            new JsonSerde.FeedMonkeysSerde());
+            new JsonSerde.FeedMonkeysSerde(), 8);
 
     // Traders read from:
 
     public static final TopicDef<Trader, TxnResult> TXN_RESULTS = new TopicDef<>(
             "txn-results",
             new JsonSerde.TraderSerde(),
-            new JsonSerde.TxnResultSerde());
+            new JsonSerde.TxnResultSerde(), 8);
 
     public static final TopicDef<String, SharePriceMult> SHARE_PRICE_OUTSIDE_EVOLUTION_METER = new TopicDef<>(
             "share-price-outside-evolution-meter",
             new JsonSerde.StringSerde(),
-            new JsonSerde.SharePriceMultSerde());
+            new JsonSerde.SharePriceMultSerde(), 1);
 
     public static final TopicDef<String, SharePriceInfo> SHARE_PRICE = new TopicDef<>(
             "share-price",
             new JsonSerde.StringSerde(),
-            new JsonSerde.SharePriceInfoSerde());
+            new JsonSerde.SharePriceInfoSerde(), 1);
 
     public static final TopicDef<String, Gibb> GIBBS = new TopicDef<>(
             "gibber-gibbs",
             new JsonSerde.StringSerde(),
-            new JsonSerde.GibbSerde()
-    );
+            new JsonSerde.GibbSerde(),
+            1);
 
     private final String topicName;
     private final Serde<K> keySerde;
     private final Serde<V> valueSerde;
+    private final int partitions;
 
-    public TopicDef(String topicName, Serde<K> keySerde, Serde<V> valueSerde) {
+    public TopicDef(String topicName, Serde<K> keySerde, Serde<V> valueSerde, int partitions) {
         this.topicName = topicName;
         this.keySerde = keySerde;
         this.valueSerde = valueSerde;
+        this.partitions = partitions;
+    }
+
+    public TopicDef(String topicName, Serde<K> keySerde, Serde<V> valueSerde) {
+        this(topicName, keySerde, valueSerde, 1);
     }
 
     public String getTopicName() {
         return topicName;
+    }
+
+    public int getPartitions() {
+        return partitions;
     }
 
     public Serde<K> getKeySerde() { return keySerde; }

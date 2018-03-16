@@ -42,7 +42,6 @@ public class MonkonomyServer implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MonkonomyServer.class);
     public static final String ONE_KEY = "GNOU";
-    public static final int PARTITIONS = 10;
     public static final short REPLICATION = 1;
 
     private final ScheduledExecutorService executor =
@@ -67,7 +66,6 @@ public class MonkonomyServer implements Runnable {
         executor.execute(sharePriceMultMeter);
 
         Properties props = boilerplate.streamsConfigProps(false);
-        props.setProperty(StreamsConfig.NUM_STREAM_THREADS_CONFIG, "" + PARTITIONS);
         StreamsConfig config = new StreamsConfig(props);
         KafkaStreams kafkaStreams = new KafkaStreams(buildTopology(), config);
 
@@ -133,7 +131,7 @@ public class MonkonomyServer implements Runnable {
 
         admin.createTopics(
             topicDefs.stream()
-                .map(td -> new NewTopic(td.getTopicName(), PARTITIONS, REPLICATION).configs(configs))
+                .map(td -> new NewTopic(td.getTopicName(), td.getPartitions(), REPLICATION).configs(configs))
                 .collect(Collectors.toSet()));
 
         KafkaStreamsBoilerplate helper = new KafkaStreamsBoilerplate(

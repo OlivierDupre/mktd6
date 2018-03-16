@@ -63,14 +63,12 @@ public class Chapter05_TablesAndJoining extends EmbeddedClusterBoilerplate {
     public static final TopicDef<Trader, TraderState> STATES = new TopicDef<>(
         "trader-states",
         new JsonSerde.TraderSerde(),
-        new JsonSerde.TraderStateSerde()
-    );
+        new JsonSerde.TraderStateSerde());
 
     public static final TopicDef<Trader, Integer> FED_MONKEYS_EVENTS = new TopicDef<>(
         "trader-fed-monkeys",
         new JsonSerde.TraderSerde(),
-        new JsonSerde.IntegerSerde()
-    );
+        new JsonSerde.IntegerSerde());
 
     //==========================================================================
     //==== YOUR MISSION, SHOULD YOU DECIDE TO ACCEPT IT

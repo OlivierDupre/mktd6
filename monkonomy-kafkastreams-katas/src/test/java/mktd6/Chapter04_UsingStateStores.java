@@ -60,8 +60,7 @@ public class Chapter04_UsingStateStores extends EmbeddedClusterBoilerplate {
     public static final TopicDef<String, Double> PRICE_EMA = new TopicDef<>(
         "price-ema",
         new JsonSerde.StringSerde(),
-        new JsonSerde.DoubleSerde()
-    );
+        new JsonSerde.DoubleSerde());
 
     //==========================================================================
     //==== YOUR MISSION, SHOULD YOU DECIDE TO ACCEPT IT
