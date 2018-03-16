@@ -5,11 +5,13 @@ import mktd6.kstreams.TopologySupplier;
 import mktd6.model.market.ops.TxnResultType;
 import mktd6.model.trader.Trader;
 import mktd6.server.model.ServerStores;
+import mktd6.server.model.ServerTopics;
 import mktd6.server.model.TraderStateUpdater;
 import mktd6.server.model.TxnEvent;
-import mktd6.server.model.ServerTopics;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static mktd6.server.model.ServerStores.STATE_STORE;
 import static mktd6.topic.TopicDef.*;
@@ -26,6 +28,7 @@ import static mktd6.topic.TopicDef.*;
  */
 public class MarketServer  implements TopologySupplier {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MarketServer.class);
 
     @Override
     public StreamsBuilder apply(KafkaStreamsBoilerplate helper, StreamsBuilder builder) {
@@ -65,6 +68,7 @@ public class MarketServer  implements TopologySupplier {
 
         txnEvents
             .mapValues(TxnEvent::getTxnResult)
+            .peek((k,tr) -> LOG.info("TxnResult: {} = {}", k.getName(), tr))
             .to(TXN_RESULTS.getTopicName(), helper.produced(TXN_RESULTS));
 
         txnEvents

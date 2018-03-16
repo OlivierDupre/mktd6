@@ -18,6 +18,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class MonkonomyServer implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MonkonomyServer.class);
     public static final String ONE_KEY = "GNOU";
+    public static final int PARTITIONS = 10;
+    public static final short REPLICATION = 1;
 
     private final ScheduledExecutorService executor =
         Executors.newScheduledThreadPool(32);
@@ -59,13 +62,14 @@ public class MonkonomyServer implements Runnable {
 
     @Override
     public void run() {
-        executor.execute(() -> gibberServer.run(Arrays.asList("banana")));
+        executor.execute(() -> gibberServer.run(Arrays.asList("banana", "mktd")));
         executor.execute(investmentServer);
         executor.execute(sharePriceMultMeter);
 
-        KafkaStreams kafkaStreams = new KafkaStreams(
-            buildTopology(),
-            boilerplate.streamsConfig(false));
+        Properties props = boilerplate.streamsConfigProps(false);
+        props.setProperty(StreamsConfig.NUM_STREAM_THREADS_CONFIG, "" + PARTITIONS);
+        StreamsConfig config = new StreamsConfig(props);
+        KafkaStreams kafkaStreams = new KafkaStreams(buildTopology(), config);
 
         //displayTopology(kafkaStreams);
 
@@ -112,8 +116,6 @@ public class MonkonomyServer implements Runnable {
         AdminClient admin = AdminClient.create(config);
 
         Map<String, String> configs = new HashMap<>();
-        int partitions = 3;
-        short replication = 1;
 
         List<TopicDef<?,?>> topicDefs = Lists.newArrayList(
             TopicDef.SHARE_PRICE,
@@ -131,7 +133,7 @@ public class MonkonomyServer implements Runnable {
 
         admin.createTopics(
             topicDefs.stream()
-                .map(td -> new NewTopic(td.getTopicName(), partitions, replication).configs(configs))
+                .map(td -> new NewTopic(td.getTopicName(), PARTITIONS, REPLICATION).configs(configs))
                 .collect(Collectors.toSet()));
 
         KafkaStreamsBoilerplate helper = new KafkaStreamsBoilerplate(

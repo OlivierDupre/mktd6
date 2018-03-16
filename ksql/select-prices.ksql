@@ -1,14 +1,14 @@
-CREATE STREAM prices (
-    coins DOUBLE,
-    time LONG
-) WITH (
-    VALUE_FORMAT = 'JSON',
-    KAFKA_TOPIC = 'share-price',
-    TIMESTAMP='time'
+CREATE STREAM prices ( \
+    coins DOUBLE,      \
+    time LONG          \
+) WITH (               \
+    VALUE_FORMAT = 'JSON',       \
+    KAFKA_TOPIC = 'share-price', \
+    TIMESTAMP='time'             \
 );
 
 
-SELECT coins
+SELECT coins \
 FROM prices;
 
 

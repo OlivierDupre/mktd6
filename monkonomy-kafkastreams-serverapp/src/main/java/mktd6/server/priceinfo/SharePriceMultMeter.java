@@ -55,7 +55,7 @@ public class SharePriceMultMeter implements Runnable {
         executor.scheduleAtFixedRate(
             () -> producer.send(new ProducerRecord<>(topicName, MonkonomyServer.ONE_KEY, getMult())),
             0,
-            1,
+            5,
             TimeUnit.SECONDS
         );
     }

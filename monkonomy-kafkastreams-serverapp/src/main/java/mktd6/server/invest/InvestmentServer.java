@@ -50,10 +50,10 @@ public class InvestmentServer implements Runnable {
         TxnResult result = event.getTxnResult();
 
         double totalInvestments = record.value().getTotalInvestments();
-        long timeToWait = (long) totalInvestments;
+        long timeToWait = (long) Math.min(totalInvestments * 10, 60000);
         double logNormalBiasReturn = Math.exp(-1 - (totalInvestments / 1000d));
         LogNormalDistribution logNormal = new LogNormalDistribution(0.035 + logNormalBiasReturn, 0.01);
-        double investmentReturn = logNormal.sample();
+        double investmentReturn = Math.min(1.15, logNormal.sample());
 
         executor.schedule(() -> {
             TraderStateUpdater updater = new TraderStateUpdater(
